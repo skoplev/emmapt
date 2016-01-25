@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- D3 tree style -->
+<link rel="stylesheet" type="text/css" href="static/style/d3tree.css">
+
+<link rel="stylesheet" type="text/css" href="static/prettyjson/pretty-json.css">
+
+
+<!-- D3 library -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script type="text/javascript" src="static/js/trees.js"></script>
+
+<!-- Underscore, used fro JSON print -->
+<script type="text/javascript" src="static/js/vendor/underscore.js"></script>
+
+<!-- Backbone, used for JSON print -->
+<script type="text/javascript" src="static/js/vendor/backbone.js"></script>
+
+<script type="text/javascript" src="static/prettyjson/pretty-json-min.js"></script>
+
+<!-- marked for parsing Markdown -->
+<script type="text/javascript" src="static/js/vendor/marked.js"></script>
+
+<!-- Highlight -->
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script> -->
+<!-- Including R -->
+<script type="text/javascript" src="static/vendor/highlight/highlight.pack.js"></script>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+<!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/agate.min.css"> -->
+
+<!-- tokenize for autocomplete selection of lists -->
+<script type="text/javascript" src="static/vendor/tokenize/jquery.tokenize.js"></script>
+<link rel="stylesheet" type="text/css" href="static/vendor/tokenize/jquery.tokenize.css" />
+
+<!-- Tag-it -->
+<!-- <script src="static/vendor/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script> -->
+<!-- <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css"> -->
+
+<!-- <link rel="stylesheet" type="text/css" href="static/vendor/highlight/styles/default.css"> -->
+
+<form action="bench" method="post">
+
+<!-- Project header -->
+<div class="row toprow">
+    <div class="small-6 columns" id="header-left">
+     <!-- <h1>Title</h1> -->
+    </div>
+
+    <!-- Action bar -->
+    <div class="small-6 columns text-right" id="header-right">
+
+        <span data-tooltip aria-haspopup="true" class="has-tip" title="Benchmark analysis with custom data selection.<br><br>The selection is based on the file trees shown in the data collections section below. Currently, only data in the .h5 format is supported for analysis. Data from 2 collections must be selected along with approriate matching fields.">
+            <button type="submit" id="benchmark-button" class="button">benchmark</button>
+        </span>
+
+        <span data-tooltip aria-haspopup="true" class="has-tip" title="Download entire project tree.">
+            <button type="button" id="download-button" class="button success">download</button>
+        </span>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="columns" id="title">
+    </div>
+</div>
+
+
+<div class="row" id="data-overview">
+
+        <div class="columns">
+            <h1>Data collections</h1>
+        </div>
+
+        <!-- <input type="text" name="firstname" value="gandalf" /> -->
+        <!-- <input type="submit" value="submit" /> -->
+</div>
+
+</form>
+
+
+<div class="row">
+    <div class="columns">
+        <h1>Root files</h1>
+        <table id="file-table">
+            <tr>
+                <th>File name</th>
+                <th>Size (MB)</th>
+                <th></th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+  <div class="columns">
+    <h1>Description</h1>
+  </div>
+</div>
+
+<!-- Description markdown -->
+<div class="row">
+    <div class="columns">
+        <div class="panel" id="description"></div>
+        
+    </div>
+</div>
+
+<script>
+
+$(document).ready(function() {
+    // Project backward navigation bar.
+    $("#header-left")
+        .prepend(makeNavLinks("{{data_collection}}"));  // prepend ensures that the navigation bar stays on top
+
+    // $("#benchmark-button").attr("href", "bench/{{data_collection}}");
+    // $("#download-button").attr("href", "download/dtree/{{data_collection}}");
+    $("#download-button").attr("onclick", "location.href='download/dtree/{{data_collection}}'");
+
+//     $("#header-right")
+//         .append($("<a>")
+//             .attr("href", "bench/dtree/{{data_collection}}")
+//             .attr("class", "button")
+//             .text("bench")
+//         )
+//         .append($("<a>")
+//             .attr("href", "download/dtree/{{data_collection}}")
+//             .attr("class", "button success")
+//             .text("download")
+//         )
+//         ;
+
+});
+
+// AJAX call retrieving file tree for the specified data collection.
+d3.json("/emmapt/api/getdtree/{{data_collection}}", function(error, data_file_tree) {
+    if (error) throw error;
+
+    // Project header containing the project title and subtitle from the root meta.json file.
+    try {
+        $("#title")
+            .append($("<h1>")
+                .text(data_file_tree.meta.Name)
+            )
+            .append($("<h2>")
+                .attr("class", "subheader")
+                .text(data_file_tree.meta.Description)
+            )
+    } catch(err) {
+        // Name or Description fields are not available
+        // console.log(err);
+    }
+
+    // Data collections, encoded in the recieved children from project file
+    for (var i in data_file_tree.children) {
+        var item = data_file_tree.children[i];
+        if (item.type === "dir") {
+            // Make container for data collection. Panel inside Foundation column div.
+            var data_column = $("<div>").addClass("columns medium-6")
+                .appendTo($("#data-overview"));  // row of data entries
+
+            // if (i === data_file_tree.children.length - 1) {
+            //     // end column
+            //     data_column.addClass("end");  // foundation specifier for last column
+            //     console.log(data_column);
+            // }
+
+            var data_panel = $("<div>").addClass("panel")
+                .appendTo(data_column);
+
+            // Header of panel
+            data_panel.append($("<h2>").text(item.name));
+
+            // Add D3 SVG element. Note that D3 append (not jQuery) returns the generated object
+            var svg = d3.select(data_panel.get(0))
+                .append("svg")
+                    .attr("class", "d3tree");
+
+            data_panel.append("<hr>");
+
+            var meta_div = $("<div>").appendTo(data_panel);
+
+            // var node = new PrettyJSON.view.Node({
+            //     el: meta_div,  // DOM element that gets filled in
+            //     data: item.meta
+            // });
+
+            // Render tree representation of data collection
+            drawTree(svg, item, meta_div);
+
+
+            // data_panel.append(JSON.stringify(item.meta));
+
+            // data_panel.append("<h3>Metadata</h3>");
+
+
+            // var node = new PrettyJSON.view.Node({
+            //     el: data_panel,  // dom element to append to
+            //     data: item.meta
+            // });
+
+        } else if (item.type === "file") {
+            // Append file information to file table: name, size, action
+            $("#file-table").append(
+                $("<tr>")
+                    .append($("<td>").text(item.name))
+                    .append($("<td>").text((item.size / 1000000).toFixed(3)))
+                    .append($("<td>")
+                        .append(
+                            $("<a>").attr("href", "/emmapt/download/" + item.path).text("download")
+                        )
+                        .append(" ")
+                        // note paths begin with dtree
+                        .append($("<a>").attr("href", "/emmapt/" + item.path).text("view"))
+
+                    )
+            );
+        }
+    }
+
+    // Last data column (from the children loop)
+    data_column.addClass("end");  // end is a Foundation specifier ensuring left alignment of boxes.
+});
+
+// marked.setOptions({
+//     highlight: function(code) {
+//         return hljs.highlightAuto(code).value;
+//     }
+// });
+
+// Retrieve DESCRIPTION.md file from server
+$.ajax({
+    type: "GET",
+    url: "/bdmerge/api/readFile/{{data_collection}}/DESCRIPTION.md",
+    success: function(data) {
+        $("div#description").html(marked(data));
+
+        $("div#description>pre>code").each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    }
+});
+
+// Complete reload on resize of window.
+$(window).resize(function() {
+    // location.reload();
+});
+
+// Constructs a jQuery navigation bar. Uses <span> as wrapper and <a>
+// Arguments: path: a string of the project path separated by '/'
+makeNavLinks = function(path) {
+    // Construct navigation jQuery object
+    // First, base of all projects.
+    var nav = $("<span>")
+        .attr("class", "back-nav");
+
+    nav.append("/");
+
+    nav.append($("<a>")
+        .attr("href", "/bdmerge/browse")
+        .text("project")
+        );
+
+    nodes = path.split("/");  // array of each navigation node
+
+    // Loop over each project navigation node, adding them to the navigation object.
+    for (var i = 0; i < nodes.length; i++) {
+        nav.append("/");  // navigation separator
+        // ith node path string.  folder1/folder2
+        var node_path = nodes.slice(0, i+1)  // first i
+            .join("/")
+
+        nav.append($("<a>")
+            .attr("href", "/bdmerge/project/" + node_path)
+            .text(nodes[i])
+            );
+
+    }
+    return nav;
+}
+
+</script>
+
+{% endblock %}

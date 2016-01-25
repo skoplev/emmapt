@@ -1,0 +1,593 @@
+40/30
+40/(5/60)
+40/(60/5)
+1.05^10
+1.05^20
+2000*12
+2000*12*6.8
+4500*0.0125
+4500*0.0125/12
+10000*0.00125
+5000*0.00125
+50/5000
+50/10000
+20000*0.00125
+25000*0.00125
+4600*0.0125
+4600*0.0125*6.7
+1.0125^2
+1.0125^10
+50000*0.00125
+40000*0.00125
+library(rpud)
+install.packates("rpud")
+install.packages("rpud")
+library(rpud)
+remove.packages(rpud)
+library(rpud)
+91/168
+10000*6.6
+8*6
+31605 * 91
+(31605 * 91) / 49344
+70000*6
+305000/6
+4/365
+(4/365)*0.0125
+()(4/365)*0.0125)*10000
+((4/365)*0.0125)*10000
+((6/365)*0.0125)*10000
+180/3
+(7/365) * 0.0125
+()(7/365) * 0.0125)*10000
+((7/365) * 0.0125)*10000
+10000*1.04^10
+10000*1.04^20
+10000*1.05^20
+10000*1.05^10
+114092*550
+54425235 * 550
+10^5.1
+10^5.1 / 10^4.5
+1761/9346
+1326/9346
+600/30000
+4,708  - 3,859
+(4708  - 3859)/3859
+1931/3813
+1697/5027
+382 / 96
+1.034^10
+1.034^20
+(1.02)^10
+95*100
+95*50
+95*55
+95*52
+95*50
+9570-4763
+4800/55.44
+55.44*86
+9600*6.6
+4751.5+4828.04
+4751.5+4828.04 - 22.22
+2000*0.01/12
+391000/6.6
+clear()
+2000*0.01
+500000*0.04
+500000*0.06
+500000*0.04
+1000000*0.04
+2000000*0.04
+3000000*0.04
+6000*12
+6000*12*4
+6000*12*4*6.6
+2000*6.6
+2000*0.011/12
+1815 - 225
+a = matrix(c(0, 1, 1, 0), ncol=2)
+a
+solve(a)
+c = matrix(c(1, 0, 0, 0, 1, 0, 5, 0, 1), ncol=3)
+a
+c
+c = matrix(c(1, 0, 5, 0, 1, 0, 0, 0, 1), ncol=3)
+c
+solve(c)
+b = matrix(c(2, 0, 0, 3), ncol=2)
+b
+solve(b)
+c_prop = matrix(c(1, 0, 0, 0, 1, 0, -5, 0, 1), ncol=3)
+c
+c %*% c_prop
+c
+c_prop
+# RMA normalization for each platform-specific Affy batch#
+# runtime: ~3min#
+daffy_norm = lapply(daffy, rma)#
+#
+exprs_files = combineAffyExprs(daffy_norm)  # combines list of Affy expression sets. Includes only intersecting probes.#
+#
+# Cross-platform normalization using ComBat -- an empirical Bayes approach.#
+# Calculate batch (platform) codes 1, 2, 3, ...#
+batch = c()#
+for (i in 1:length(daffy_norm)) {#
+    batch = c(batch, rep(i, ncol(exprs(daffy_norm[[i]]))))#
+}#
+# Cross-platform normalization call#
+exprs_files_norm = ComBat(exprs_files, batch, mod=NULL)#
+#
+# Construct data matrix based on the provided metadata.#
+# Note that some negative controls are associated with multiple samples.#
+#
+# By appending the negative controls#
+# copy main data#
+out = list()#
+out$meta_col = meta#
+out$meta_col$neg_ctrl = FALSE#
+out$meta_row = data.frame(probe_id=rownames(exprs_files_norm))#
+#
+out$data = exprs_files_norm[,getCmapFileName(meta)]#
+#
+# append negative control data. Not efficient due to reallocation of data. Runtime ~3min#
+# TODO: rewrite collection procedure...#
+for (i in 1:nrow(meta)) {#
+    meta_entry = meta[i,]#
+#
+    ctrl_files = getCmapCtrlFileNames(meta_entry)#
+#
+    # Slice .cell file specific expression matrix and repeat assicatied column metadata#
+    meta_entry$neg_ctrl = TRUE#
+    out$data = cbind(out$data, exprs_files_norm[,ctrl_files])#
+    out$meta_col = rbind(out$meta_col, meta_entry[rep(1, length(ctrl_files)),])#
+}
+library(bdmerge)#
+#
+# DEBUG#
+rm(list=ls())#
+setwd("/Users/sk/Google Drive/projects/bdmerge/dtree/d12/s2")#
+#
+db_path_CCLE = "/Users/sk/Data/CCLE expression"#
+#
+# Match cell lines to CCLE data#
+# ------------------------------------------------#
+#
+# Load CCLE meta data#
+ccle_info = read.table(paste0(db_path_CCLE, "/CCLE_sample_info_file_2012-10-18.txt"), sep="\t", header=TRUE)#
+# Match stemmed cell line descriptions.#
+#
+# Remove NA's where cell lines where not found.#
+# ccle_ids = ccle_ids[!is.na(ccle_ids)]#
+#
+# Load TCPA RPPA data for reference. Note that the original s1 data entry is overwritten with the matched CCLE cell line names.#
+d = readData("../s1")
+library(bdmerge)#
+#
+# DEBUG#
+rm(list=ls())#
+setwd("/Users/sk/Google Drive/projects/bdmerge/dtree/d12/s2")#
+#
+db_path_CCLE = "/Users/sk/Data/CCLE expression"#
+#
+# Match cell lines to CCLE data#
+# ------------------------------------------------#
+#
+# Load CCLE meta data#
+ccle_info = read.table(paste0(db_path_CCLE, "/CCLE_sample_info_file_2012-10-18.txt"), sep="\t", header=TRUE)#
+# Match stemmed cell line descriptions.#
+#
+# Remove NA's where cell lines where not found.#
+# ccle_ids = ccle_ids[!is.na(ccle_ids)]#
+#
+# Load TCPA RPPA data for reference. Note that the original s1 data entry is overwritten with the matched CCLE cell line names.#
+d = readData("../s1")
+library(bdmerge)
+readData = function(dir=".", names=NULL, file_format="hdf5") {#
+    require(rhdf5)#
+    # options(stringsAsFactors=FALSE)  # WARNING: forces global options to change...#
+    d = list()#
+#
+    if (file_format == "hdf5") {#
+        d = h5read(paste0(dir, "/data.h5"), "/")#
+        H5close()#
+    } else if (file_format == "txt") {#
+        # Load metadata#
+        d$meta_row = fread(paste0(dir, "/meta_row.tsv"), header=TRUE, sep="auto", stringsAsFactors=FALSE)#
+        d$meta_col = fread(paste0(dir, "/meta_col.tsv"), header=TRUE, sep="auto", stringsAsFactors=FALSE)#
+#
+        # Load main data entries#
+        for (entry in names) {#
+            d[[entry]] = fread(paste0(dir, "/", entry, ".tsv"), header=FALSE, sep="auto")#
+            d[[entry]] = matrix(as.numeric(as.matrix(d[[entry]])), nrow=nrow(d[[entry]]))  # numeric data matrix#
+#
+            # Check dimensions of the loaded main data.#
+            if (ncol(d[[entry]]) != nrow(d$meta_col)) {#
+                stop("Column metadata and data matrix dimensions are not compatible.")#
+            }#
+#
+            if (nrow(d[[entry]]) != nrow(d$meta_row)) {#
+                stop("Row metadata and data matrix dimensions are not compatible.")#
+            }#
+        }#
+    } else {#
+        stop("wrong file_format")#
+    }#
+#
+    # Check if valid#
+    checkDataList(d)#
+#
+    return(d)#
+}
+library(bdmerge)#
+#
+# DEBUG#
+rm(list=ls())#
+setwd("/Users/sk/Google Drive/projects/bdmerge/dtree/d12/s2")#
+#
+db_path_CCLE = "/Users/sk/Data/CCLE expression"#
+#
+# Match cell lines to CCLE data#
+# ------------------------------------------------#
+#
+# Load CCLE meta data#
+ccle_info = read.table(paste0(db_path_CCLE, "/CCLE_sample_info_file_2012-10-18.txt"), sep="\t", header=TRUE)#
+# Match stemmed cell line descriptions.#
+#
+# Remove NA's where cell lines where not found.#
+# ccle_ids = ccle_ids[!is.na(ccle_ids)]#
+#
+# Load TCPA RPPA data for reference. Note that the original s1 data entry is overwritten with the matched CCLE cell line names.#
+d = readData("../s1")
+library(devtools)#
+install("/Users/sk/Google Drive/projects/bdmerge/lib/rlib/bdmerge")
+library(bdmerge)#
+#
+# DEBUG#
+rm(list=ls())#
+setwd("/Users/sk/Google Drive/projects/bdmerge/dtree/d12/s2")#
+#
+db_path_CCLE = "/Users/sk/Data/CCLE expression"#
+#
+# Match cell lines to CCLE data#
+# ------------------------------------------------#
+#
+# Load CCLE meta data#
+ccle_info = read.table(paste0(db_path_CCLE, "/CCLE_sample_info_file_2012-10-18.txt"), sep="\t", header=TRUE)#
+# Match stemmed cell line descriptions.#
+#
+# Remove NA's where cell lines where not found.#
+# ccle_ids = ccle_ids[!is.na(ccle_ids)]#
+#
+# Load TCPA RPPA data for reference. Note that the original s1 data entry is overwritten with the matched CCLE cell line names.#
+d = readData("../s1")
+require(rhdf5)
+d = readData("../s1")
+ccle_mrna = readGct(paste0(db_path_CCLE, "/CCLE_Expression_Entrez_2012-09-29.gct"))
+lapply(ccle_mrna, dim)
+ccle_mrna$meta_row
+head(ccle_mrna$meta_row)
+head(ccle_mrna$meta_col)
+lapply(ccle_mrna, dim)
+2:2
+2:1
+2:1
+library(devtools)#
+install("/Users/sk/Google Drive/projects/bdmerge/lib/rlib/bdmerge")
+ccle_mrna = readGct(paste0(db_path_CCLE, "/CCLE_Expression_Entrez_2012-09-29.gct"))
+head(ccle_mrna$meta_col)
+head(ccle_mrna$meta_row)
+file_name =paste0(db_path_CCLE, "/CCLE_Expression_Entrez_2012-09-29.gct")
+gct_header = read.table(file_name, skip=1, nrows=1, sep="\t")  # read .gct file header#
+    meta_nrow = gct_header[1, 4]  # rows to skip#
+    meta_ncol = gct_header[1, 3]  # columns to skip#
+#
+    if (is.null(meta_nrow)) {#
+        meta_nrow = 0#
+    }#
+#
+    if (is.null(meta_ncol)) {#
+        meta_ncol = 0#
+    }#
+#
+    # Reads a .gct file into a data frame. Flat format of both main data, row meta data, and column meta data.#
+    # main_mat = read.table(file_name, skip=2, sep="\t", header=FALSE)#
+    main_mat = fread(file_name, skip=2, header=FALSE)
+library(data.table)
+gct_header = read.table(file_name, skip=1, nrows=1, sep="\t")  # read .gct file header#
+    meta_nrow = gct_header[1, 4]  # rows to skip#
+    meta_ncol = gct_header[1, 3]  # columns to skip#
+#
+    if (is.null(meta_nrow)) {#
+        meta_nrow = 0#
+    }#
+#
+    if (is.null(meta_ncol)) {#
+        meta_ncol = 0#
+    }#
+#
+    # Reads a .gct file into a data frame. Flat format of both main data, row meta data, and column meta data.#
+    # main_mat = read.table(file_name, skip=2, sep="\t", header=FALSE)#
+    main_mat = fread(file_name, skip=2, header=FALSE)
+mat = as.data.frame(main_mat)
+meta_nrow
+meta_ncol
+if (!is.integer(meta_nrow) & meta_nrow != 0) {#
+        stop("meta_nrow is not an integer")#
+    }#
+#
+    if (!is.integer(meta_ncol) & meta_ncol != 0) {#
+        stop("meta_ncol is not an integer")#
+    }
+meta_nrow+2
+meta_ncol
+(meta_ncol+2)
+meta_nrow == 0
+meta_col = mat[2, (meta_ncol+2):ncol(mat), drop=FALSE]  # only the second row
+meta_col
+dim(meta_col)
+meta_col = t(meta_col)
+meta_col = as.data.frame(meta_col)
+meta_col
+mat[1:10, 1:10]
+meta_col = mat[1, (meta_ncol+2):ncol(mat), drop=FALSE]  # only the second row
+# meta_col = d[2:meta_nrow, (meta_ncol+2):ncol(d)]#
+    meta_col = t(meta_col)#
+    meta_col = as.data.frame(meta_col)
+meta_col
+library(devtools)#
+install("/Users/sk/Google Drive/projects/bdmerge/lib/rlib/bdmerge")
+ccle_mrna = readGct(paste0(db_path_CCLE, "/CCLE_Expression_Entrez_2012-09-29.gct"))
+library(devtools)#
+install("/Users/sk/Google Drive/projects/bdmerge/lib/rlib/bdmerge")
+ccle_mrna = readGct(paste0(db_path_CCLE, "/CCLE_Expression_Entrez_2012-09-29.gct"))
+ccle_mrna$meta_col
+lapply(ccle_mrna, dim)
+ccle_mrna$meta_row
+head(ccle_mrna$meta_row)
+colnames(ccle_mrna)
+ccle_mrna$meta_col
+ccle_mrna$meta_col[match_ccle_id,]
+ccle_tcpa_cell_map = charmatch(stemString(ccle_info$Cell.line.primary.name), stemString(d$meta_col$Sample.description))#
+#
+# zero is ambigous results#
+match_tcpa_id = ccle_tcpa_cell_map[!is.na(ccle_tcpa_cell_map) & ccle_tcpa_cell_map != 0]#
+match_ccle_id = which(!is.na(ccle_tcpa_cell_map) & ccle_tcpa_cell_map != 0)#
+#
+d$meta_col$cell_line_match = NA#
+d$meta_col$cell_line_match[match_tcpa_id] = as.character(ccle_info$Cell.line.primary.name[match_ccle_id])
+ccle_mrna$meta_col[match_ccle_id,]
+ccle_mrna$meta_col[,1]
+colnames(ccle_info)
+head(ccle_info)
+ccle_mrna$meta_col[,1] == ccle_info$CCLE.name
+dim(ccle_info)
+dim(ccle_mrna$meta_col)
+match(ccle_mrna$meta_col[,1], ccle_info$CCLE.name)
+id = match(ccle_mrna$meta_col[,1], ccle_info$CCLE.name)
+id = match(ccle_mrna$meta_col[,1], ccle_info$CCLE.name)
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+id
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+id
+id
+id
+dim(ccle_mrna)
+dim(ccle_mrna$dat )
+dim(ccle_mrna$data)
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])
+id
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+nsamples(ccle_mrna)
+id < nsamples(ccle_mrna)
+id = id[!is.na(id)]
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub$meta_col
+ccle_mrna_sub$meta_col[,1]
+ccle_mrna_sub$meta_col[1,]
+ccle_mrna_sub$meta_col
+dim(ccle_mrna_sub$meta_col)
+# Returns the column subset of a bdmerge data list.#
+# sample_num: a vector of the sample ids#
+# d is a bdmerge data list#
+colSubset = function(d, samples) {#
+#
+    if (class(samples) == "logical") {#
+        samples = which(samples)#
+    }#
+#
+    if (!all(samples <= nsamples(d))) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    if (!all(samples > 0)) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    out = list()#
+#
+    out$meta_row = d$meta_row#
+    out$meta_col = d$meta_col[samples, drop=FALSE]#
+#
+    for (entry in names(d)) {#
+        if (entry == "meta_row" || entry == "meta_col") next#
+#
+        out[[entry]] = d[[entry]][,samples, drop=FALSE]#
+    }#
+    checkDataList(out)#
+    return(out)#
+}
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+# Returns the column subset of a bdmerge data list.#
+# sample_num: a vector of the sample ids#
+# d is a bdmerge data list#
+colSubset = function(d, samples) {#
+#
+    if (class(samples) == "logical") {#
+        samples = which(samples)#
+    }#
+#
+    if (!all(samples <= nsamples(d))) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    if (!all(samples > 0)) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    out = list()#
+#
+    out$meta_row = d$meta_row#
+    out$meta_col = d$meta_col[samples]#
+#
+    for (entry in names(d)) {#
+        if (entry == "meta_row" || entry == "meta_col") next#
+#
+        out[[entry]] = d[[entry]][,samples]#
+    }#
+    checkDataList(out)#
+    return(out)#
+}
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])#
+#
+# remove NAs#
+id = id[!is.na(id)]#
+#
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+library(bdmerge)
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+id
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])
+id = match(ccle_mrna$meta_col[,1], ccle_info$CCLE.name)
+id = id[!is.na(id)]
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+id = id[!is.na(id)]
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+nsamples(ccle_mrna_sub )
+nsamples(ccle_mrna)
+colSubset(ccle_mrna, id)
+lapply(ccle_mrna, dim)
+ccle_mrna_sub = colSubset(ccle_mrna, 1:10)
+ccle_mrna_sub = colSubset(ccle_mrna, 1:10)
+ccle_mrna_sub = colSubset(ccle_mrna, 1:10)
+colSubset = function(d, samples) {#
+#
+    if (class(samples) == "logical") {#
+        samples = which(samples)#
+    }#
+#
+    if (!all(samples <= nsamples(d))) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    if (!all(samples > 0)) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    out = list()#
+#
+    out$meta_row = d$meta_row#
+    out$meta_col = d$meta_col[samples,]#
+#
+    for (entry in names(d)) {#
+        if (entry == "meta_row" || entry == "meta_col") next#
+#
+        out[[entry]] = d[[entry]][,samples]#
+    }#
+    checkDataList(out)#
+    return(out)#
+}
+id = id[!is.na(id)]
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])#
+#
+# remove NAs#
+id = id[!is.na(id)]#
+#
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub
+lapply(ccle_mrna_sub, dim)
+colSubset = function(d, samples) {#
+#
+    if (class(samples) == "logical") {#
+        samples = which(samples)#
+    }#
+#
+    if (!all(samples <= nsamples(d))) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    if (!all(samples > 0)) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    out = list()#
+#
+    out$meta_row = d$meta_row#
+    out$meta_col = d$meta_col[samples, drop=FALSE]#
+#
+    for (entry in names(d)) {#
+        if (entry == "meta_row" || entry == "meta_col") next#
+#
+        out[[entry]] = d[[entry]][,samples]#
+    }#
+    checkDataList(out)#
+    return(out)#
+}
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub$meta_col
+as.data.frame(ccle_mrna_sub$meta_col)
+colSubset = function(d, samples) {#
+#
+    if (class(samples) == "logical") {#
+        samples = which(samples)#
+    }#
+#
+    if (!all(samples <= nsamples(d))) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    if (!all(samples > 0)) {#
+        stop("samples is out of bounds")#
+    }#
+#
+    out = list()#
+#
+    out$meta_row = d$meta_row#
+    out$meta_col = d$meta_col[samples,]#
+    out$meta_col = as.data.frame(out$meta_col)  # #
+#
+    for (entry in names(d)) {#
+        if (entry == "meta_row" || entry == "meta_col") next#
+#
+        out[[entry]] = d[[entry]][,samples]#
+    }#
+    checkDataList(out)#
+    return(out)#
+}
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+lapply(ccle_mrna_s)
+lapply(ccle_mrna_sub, dim)
+ccle_mrna_sub$meta_col
+lapply(ccle_mrna_sub, dim)
+length(id)
+id = match(ccle_info$CCLE.name, ccle_mrna$meta_col[,1])
+id
+ccle_mrna$meta_col[,1]
+length(ccle_mrna$meta_col[,1])
+d$meta_col
+id = match(ccle_info$CCLE.name[match_ccle_id], ccle_mrna$meta_col[,1])
+id
+id = id[!is.na(id)]
+ccle_mrna_sub = colSubset(ccle_mrna, id)
+ccle_mrna_sub$meta_col
+ccle_mrna_sub$meta_col$cell_line_match = as.character(ccle_info$Cell.line.primary.name[match_ccle_id])
+id = match(ccle_info$CCLE.name[match_ccle_id], ccle_mrna$meta_col[,1])
+sum(is.na(id))
+19000/148200
+22900/357500
+15000*6.6

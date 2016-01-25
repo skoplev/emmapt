@@ -1,0 +1,54 @@
+<!-- Inherits from base.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row toprow">
+  <div class="columns medium-6 medium-centered">
+    <h1>The <b>bdmerge</b> project</h1> 
+
+    <p class="subheader">The Biological Data Merge (bdmerge) project seeks to systematically develop and assess methods for integrating data from high-throughput biological experiments across regulatory layers.
+    </p>
+
+    <p class="subheader">
+    Large-scale biology projects generate data using several experimental platforms applied to  many cell lines, patient samples, and experimental perturbations such as small-molecules and genetic alterations. However, the reproducibility of discoveries from such data is impeded by differences in experimental and computational procedures. A public repository of paired data sets, along with benchmark methods evaluating cross-type similarity, could assess the consistency of different experimental and computational pipelines. The developed benchmarks operate on two data matrices (samples x features) with either matched samples or matched features and are therefore generally applicable to data in this format.
+    </p>
+
+<!--     <p class="subheader">
+    In contrast, lack of consistency between two types of data may suggest that mutual information is provided by the two data types. In this case, an integrated characterization has the potential to yield a better understanding of the biological models under investigation than analyses based on either type alone. Many of the paired data collections in the repository include transcriptomics and proteomics data, which measure different and complementary regulatory layers. Direct cross-correlation between transcripts and protein measures is proposed as a preliminary analysis method. However, more integrative methods exists than can be feasibly implemented. Bdmerge therefore seeks to provide data in a standardized format allowing the scientific community to explore such integrative methods.
+    </p>
+ -->
+ 
+    <p class="subheader">
+    For a longer descriptions <a href="/emmapt/about">about</a> the project.
+    </p>
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns medium-2"><p></p></div>
+  <div class="columns medium-8">
+    <a href="/emmapt/about">
+      <img src="static/img/merge_to_model.svg" />
+    </a>
+  </div>
+  <div class="columns medium-2"><p></p></div>
+</div>
+
+
+
+<div class="row">
+  <div class="columns medium-6 medium-centered">
+    <p class="subheader">
+      <!-- It is also a work in progress which currently consists of a project outline, a  -->
+
+      The data repository is available through the <a href="/emmapt/browse">browse</a> functionality and each entry can be downloaded as data packages or as individual files. Each entry (or data project) is constructed around a pairwise data collection subjected to different computational pipelines. All code for data analysis is available either through analysis script or through the R package {<a href="https://github.com/skoplev/bdmerge">bdmerge</a>}.
+    </p>
+  </div>
+</div>
+
+<br>
+<br>
+
+	<!-- <h1>Hi, {{ user }}</h1> -->
+{% endblock %}

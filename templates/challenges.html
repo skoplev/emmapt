@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row toprow">
+  <div class="columns">
+    <h1>Current challenges</h1>
+  </div>
+</div>
+
+<!-- Dashboard of challenges -->
+<div class="row">
+  <div class="columns medium-6">
+
+    <div class="panel">
+        <h3>Identifying relationships between cancer proteomic and transcriptomic data</h3>
+        <p>For the upcoming P100 <a href="http://www.lincsproject.org/data/data-releases/">LINCS data release</a> on June 30th 2015, the challenge is to submit rules relating LINCS L1000 measurements to the novel P100 measurements.</p>
+
+        <h4>Evaluation</h4>
+        <p>Submissions will be scored according to a benchmark metric based on transformed similarities. For more information <a href="benchmarks.php">view technical details</a>. The evaluation data consists of the 6 cancer cell lines: A375, A549, MCF7, NPC, PC3, and TBD subject to 32 chemical perturbations. 
+        </p>
+
+        <h4>Requirements</h4>
+        <p>Submissions must include a data matrix of transformed transcriptomic data with matching experimental conditions. Optionally, transformations of the new proteomic data can be provided as R or Python functions. The submitted function must take as input a proteomic data vector and metadata describing the experimental condition and return a vector representing the transformed observation.</p>
+
+        <h4>Suggestions</h4>
+        <p>The participants are free to implement the transformations however they prefer using any data and methods. The key problem is how to use available data and prior knowledge, such as interaction databases, to identify new relationships between transcriptomic and proteomic data. The appropriate levels of abstraction for such relations are an open research question and the hope is that challenges such as this can provide important answers to such questions.</p>
+
+        <a href="#" class="button success">participate</a>
+      </div>
+
+      <!-- The rules must be provided in a format such that computations can be evaluated using a single function call in either R or Python. -->
+
+  </div>
+
+  <div class="columns medium-6">
+    <div class="panel">
+      <h3>Predicting outcomes of proteomic experiments</h3>
+      <p>For the upcoming P100 <a href="http://www.lincsproject.org/data/data-releases/">LINCS data release</a> on June 30th 2015, the challenge is to predict the outcome of those experiments using available data. Such predictions would help to establish data saturation in the LINCS project, that is to estimate to what extent new experiments provide new information about the particular experimental conditions.</p>
+
+      <h4>Evaluation</h4>
+      <p>Submissions will be evaluated by the mean squared deviation between the submitted predictions and the experimental result. The evaluation is performed at the 3rd data level after appropriate normalizations and aggregate statistics have been calculated. Also, each method will be subjectively evaluated based on scientific relevance. Thus, the used methods must be sufficiently well described and documented so as to enable the evaluation by a scientific expert with limited computational ability.</p>
+
+      <h4>Requirements</h4>
+      <p>Submissions must include a data matrix containing the predictions. Row and column metadata associated with the submitted matrix must uniquely match to the experimental outcome matrix.</p>
+
+      <h4>Suggestions</h4>
+      <p>Determining which type of data to use for the predictions is a critical problem. Data with matches to existing P100 experiments are more likely to be useful in this regard.</p>
+
+      <!-- <h4>Motivation</h4> -->
+      <!-- <p>Determining when </p> -->
+
+      <a href="#" class="button success">participate</a>
+    </div>
+  </div>
+
+  <hr />
+</div>
+
+<div class="row toprow">
+  <div class="columns">
+    <h1>Past challenges</h1>
+  </div>
+</div>
+
+{% endblock %}

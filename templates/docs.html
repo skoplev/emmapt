@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<div class="row">
+  <div class="columns medium-3 panel">
+    <ul class="side-nav">
+      <li><a href="#standards">standards</a></li>
+      <li><a href="#analysis trees">analysis trees</a></li>
+      <li><a href="#benchmarks">benchmarks</a></li>
+    </ul>
+  </div>
+
+  <div class="columns medium-9">
+    <div class="row">
+      <div class="columns text-left">
+        <a name="standards"></a>
+        <h1>File formats and meta data standards</h1>
+        <p>Data files are provided in a unified tab separated format (tsv) format. By convention columns are samples and rows are features. Each data file is associated with a meta_row.tsv and a meta_col.tsv file wich specifies the meta data for the rows and columns of the data entry. The meta data files have flexible names and does not enforce meta data conventions.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns text-left">
+      <a name="analysis trees"></a>
+      <h1>Analysis pipeline trees</h1>
+      <p>The analysis of biological data are often organized into pipelines, which can be viewed as series of transformation from the raw data. To facilitate the comparison of data analyzed by different pipelines it is useful to adopt conventions about the level of separation from the raw data.</p>
+
+      <h4>Level 1</h4> 
+      <p>Raw and unprocessed data such as pixel intensities from microarray experiments.</p>
+      <h4>Level 2</h4> 
+      <p>Normalized data. Technical replicates have been averaged and normalized.<p>
+      <h4>Level 3</h4> 
+      <p>Aggregate data for single experimental condition compared to negative control.</p>
+      <h4>Level 4</h4> 
+      <p>Sets of biological entities representing the experimental condition. For example upregulated genes for experimental conditions.</p>
+      <h4>Level 5</h4> 
+      <p>Sets of biological entities and relationships. For example upregulated modules of genes.</p>
+
+      <p>For a particular dataset multiple analysis methods could be relevant. Therefore the dataset and associated analyses is represented by a tree of depth 5 where each path represents a pipeline. When comparing two datasets a question is what level of analysis is best for merging those datasets.</p>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns text-left">
+        <a name="benchmarks"></a>
+        <h1>Benchmarks</h1>
+        <p>No single benchmark is likely to be applicable in all biological data contexts. We here describe the developed benchmarks, their motivations, assumptions, and limits of application.</p>
+
+        <h3>Transformative within-type similarity metric</h3>
+        <p>The following general-purpose performance metric is based on the principle that for two disparate data observations we can claim to understand how they relate if we can consistently map one to the other. Thus we are looking for some function 
+        \( f( \mathbf{x}) = \mathbf{y} \) where \( \mathbf{x} \in \mathbb{R}^n\) and \( \mathbf{y} \in \mathbb{R}^m \) are data vectors of different types. Note that non-euclidean spaces and hence non-euclidean data vectors such as gene lists also work provided that a distance measure \( d(x, y) \) is defined. Given a set of \( k \) matched data vectors \( \{ \mathbf{x}_i, \mathbf{y}_i \} \) where \( i = 1, 2, \ldots , k \). This formulation leads to a regression problem which can be solved by optimizing</p>
+
+        $$ \min_f \sum_{i=1}^k (f(\mathbf{x}_i) - \mathbf{y}_i )^T ( f( \mathbf{x} ) - \mathbf{y}_i ) $$
+
+        <p>Equivalently, we could consider a conjunction of unary transformations</p>
+
+        $$ T \mathbf{x} = T_q T_{q-1} \ldots T_2 T_1 \mathbf{x} $$
+        $$ R \mathbf{y} = R_s R_{s-1} \ldots R_2 R_1 \mathbf{y} $$
+
+        <p>and minimize the similarity difference across the two data types in the transformed spaces.</p>
+
+        $$ \min_{T, R} \sum_{i < j} \left| s(T \mathbf{x}_i, T \mathbf{x}_j ) - s( R \mathbf{y}_i, R \mathbf{y}_j ) \right| $$
+
+        <p>where \( s \) is a similarity measure defined according to a distance measure \( d \)</p>
+
+        $$ s(x, y) = \frac{1}{d(x, y) + 1} $$
+
+        <p>The equivalence of the two formulations take the form \( f = R^{-1}T\). The benefits of the similarity approach is that it suggests another way to view the same problem and therefore suggests alternative algorithms for solving it. In both formulations, we can use the objective function for evaluations.  Hence, it can be used as a performance metric for comparing different algorithms. To avoid overfitting suggestions will be validated against unseen data. Note that the transformation formulation is degenerate if \( R = c \) or \( S = c \).</p>
+
+        <p></p>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

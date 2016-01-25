@@ -1,0 +1,4 @@
+{
+	"Name":	"TCPA MDACC, CCLE mRNA",
+	"Description": "251 cancer cell line samples, 186 antibody-based protein measurements. Matched to 96 CCLE cell line measurements of mRNA gene expression."
+}

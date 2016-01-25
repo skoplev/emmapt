@@ -1,0 +1,22 @@
+/* For D3 tree */
+.node circle {
+  /*fill: #fff;*/
+  fill: steelblue;
+  stroke: black;
+  stroke-width: 0.5px;
+}
+
+.node {
+  font: 12px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+svg.d3tree {
+	width: 100%;
+	height: 100%;
+}

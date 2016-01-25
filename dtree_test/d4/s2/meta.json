@@ -1,0 +1,11 @@
+{
+	"Source": "TCGA",
+	"Type": "Transcriptomics",
+	"Disease": "Colon adenocarcinoma (COAD)",
+	"Assay": "DNA microarray (mRNA)",
+	"Features": 17814,
+	"Patients": 118,
+	"Conditions": 1,
+	"Center": "UNC",
+	"Platform": "AgilentG4502A_07_3"
+}

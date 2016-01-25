@@ -1,0 +1,4 @@
+{
+	"Name":	"TCPA COAD, TCGA mRNA",
+	"Description": "334 colon adenocarcinoma (COAD) tumor samples with 190 antibody-based protein measurements. Matched to 118 tumor samples from TCGA with mRNA gene expression measurements."
+}

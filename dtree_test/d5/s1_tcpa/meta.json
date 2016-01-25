@@ -1,0 +1,9 @@
+{
+	"Source": "TCPA",
+	"Type": "Proteomics",
+	"Disease": "Cancer cell line",
+	"Assay": "Reverse phase protein array (RPPA)",
+	"Features": 186,
+	"Cell_lines": 251,
+	"Conditions": 1
+}

@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Import D3 library -->
+<link rel="stylesheet" type="text/css" href="static/style/d3tree.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+<script type="text/javascript" src="static/js/trees.js"></script>
+
+<!-- Typewatch plugin for jQuery-->
+<script type="text/javascript" src="static/js/vendor/jquery.typewatch.js"></script>
+
+<!-- General information -->
+<div class="row toprow">
+    <div class="columns">
+        <h1>Collection of pairwise data merges</h1>
+    </div>
+</div>
+
+
+
+<div class="row">
+        <div class="columns medium-6 end">
+                <!-- <input type="search" placeholder="filter..."> -->
+                <input type="search" name="filter" placeholder="filter..." id="filter" value="" />
+                <!-- <input type="submit" style="visibility: hidden;" /> -->
+        </div>
+
+        <!-- Switch that shows/hides dataset table -->
+        <div class="columns medium-6">
+            subtables:
+            <span class="switch small">
+                <input id="subtable-switch" type="checkbox" name="some_name">
+                <label for="subtable-switch" onclick="toggleSubtables()" >lab</label>
+            </span>
+
+        </div>
+
+</div>
+
+
+<div class="row">
+    <div class="columns text-left">
+        <table id="download-table">
+            <thead>
+                <th>Project</th>
+                <th>Datasets 
+                </th>
+                <!-- <th>Datasets <button class="small" onclick="hideSubtables()">-</button><button class="small" onclick="showSubtables()">+</button></th> -->
+                <th>Integrative analysis</th>
+                <th></th>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+// Global variable data tree of collection entries, which is used when the browse table is redrawn.
+var dtree = {};  
+
+// Subtable display priority
+var subtable_priority = {
+    "Source": 1, 
+    "Type": 2, 
+    "Assay": 3, 
+    "Disease": 4,
+    "Platforms": 4,
+    "Features": 5, 
+    "Patients": 6, 
+    "Perturbations": 7, 
+    "Pipelines": 10
+};
+
+// Used for sort callback on arrays of subtable keys. Sorts according to the dictionary priority
+function prioritySortComparator(priority) {
+    return function(a, b) {
+        if (a in priority) {
+            var a_prio = priority[a];
+        } else {
+            var a_prio = Infinity;
+        }
+
+        if (b in priority) {
+            var b_prio = priority[b];
+        } else {
+            var b_prio = Infinity;
+        }
+
+        return a_prio > b_prio;
+    }
+}
+
+subtable_priority_cmp = prioritySortComparator(subtable_priority);  // priority comparator
+
+$(document).ready(function() {
+});
+
+// Returns subdirectory names from
+function getDirNames(tree) {
+
+  var dir_names = [];
+
+  for (sub_tree in tree.children) {
+    dir_names.append(getDirNames(subtree));
+  }
+}
+
+
+// $('#download-table').append("<tr><td>test</td></tr>")
+// Get document data and populate viewing table
+$.getJSON("/emmapt/api/getdtree", function(data) {
+    dtree = data;
+
+    var filter = $('#filter').val().trim();  // on back/forward. "" on refresh
+    updateTable(data, filter);  // no filter
+    updateState();  // assesses states, such as switches remembered on go back
+});
+
+
+// Reconstruct table with a filter query, which is interpreted as a regular expression.
+// Data is a tree of file files and folders.
+function updateTable(data, filter) {
+    // Tear down table.
+    $('#download-table>tbody').empty();
+
+    var table = $('#download-table');
+
+    // construct regular expression from search filter.
+    var query = new RegExp(".*" + filter + ".*", 'i');  // . is any char, * is any number of times. i is case insensitive
+
+    // Iterate over data entries creating 2 alternative tables for visualization.
+    for (var i = 0; i < data.children.length; i++) {
+        // console.log(data.children[i])
+        // Search elements according to filter
+        if (!searchTree(data.children[i], query)) {
+            // console.log(filter + " was not found. Reg exp: ", query);
+            continue;  // exclude
+        }
+
+        if (!validProjectTree(data.children[i])) {
+            continue;
+        }
+
+        // Add entry to main table
+        var row = $("<tr>").appendTo(table);
+
+        row
+            // Entry name with description as hover text
+            .append($("<td>")
+                .append($("<span>")
+                    .text(data.children[i].meta.Name)
+                    .attr("title", data.children[i].meta.Description)
+                )
+            )
+            // Dataset subtable cell
+            .append($("<td>")
+                // Number of datasets
+                .append($("<span>")
+                    .addClass("num_datasets")
+                    .text(
+                        // Filter datasets of entry by number of containing folders. Returns number of directories.
+                        data.children[i].children.filter(function(item) {return item.type === "dir";}).length
+                    )
+                )
+                // Subtable of datasets
+                .append($("<table>")
+                    .addClass("subtable hidden")
+                    .attr("id", "subtable-" + data.children[i].name)
+                )
+            )
+            // Analysis cell
+            .append($("<td>")
+                .text("A")
+            )
+            // Action cell
+            .append($("<td>")
+                .append($("<a>")
+                    .attr("href", "/emmapt/download/dtree/" + data.children[i].name)
+                    .text("download")
+                )
+                .append("<br>")
+                .append($("<a>")
+                    .attr("href", "/emmapt/project/" + data.children[i].name)
+                    .text("view")
+                )
+            );
+
+        // Select newly created subtable.
+        var subtable = $("#subtable-" + data.children[i].name);
+
+        // Loop over files contained in project folder -- loop over datasets.
+        var first_entry = true;  // flag for first entry, which determines the subheader layout
+        var table_keys = [];  // array of column name and order, determined by the first entry
+        for (var j = 0; j < data.children[i].children.length; j++) {
+            // Entry must have meta.json file to be considered part of the catalog
+            if (!validProjectTree(data.children[i].children[j])) {
+                continue;
+            }
+
+            var data_entry = data.children[i].children[j];  // shortcut for data entry
+            if (data_entry.type == "dir") {
+
+                // Subtable Header
+                // Current iterations is a data entry represented by project folder.
+                if (first_entry) {
+                    // Loop over keys in meta information, constructing an array of table keys.
+                    for (var key in data_entry.meta) {
+                        // Test if meta entry has a simple value. Strings, numbers, or booleans.
+                        if (typeof data_entry.meta[key] === "string"
+                            | typeof data_entry.meta[key] === "number"
+                            | typeof data_entry.meta[key] === "boolean") 
+                        {
+                            // valid table entry
+                            table_keys.push(key);
+                        }
+                    }
+
+                    // Sort table keys according to pre-configured priority.
+                    table_keys.sort(subtable_priority_cmp);
+
+                    // Populate table header
+                    var subtable_header = $("<thead>").appendTo(subtable);
+                    for (var ncol = 0; ncol < table_keys.length; ncol++) {
+                        subtable_header.append($("<th>").text(table_keys[ncol]));
+                    }
+                    subtable_header.append($("<th>").text("Pipelines"));
+
+                    first_entry = false;  // unset first data entry flag.
+                }
+
+                // Make new row in subtable
+                var row = $('<tr>').appendTo(subtable);
+                // Add each row element specified by table_keys
+                for (var ncol = 0; ncol < table_keys.length; ncol++) {
+                    try {
+                        row.append($("<td>").append(data_entry.meta[table_keys[ncol]]));
+                    } catch(err) {
+                        console.log(err);
+                        row.append($("<td>").append("NA"));
+                    }
+                }
+
+                // Add a row cell for the pipe tree
+                var pipe_cell = $('<td>').appendTo(row);
+                // console.log(pipe_cell)
+
+                // Add SVG object using D3.
+                // Note that d3.append() is different from jquery.append()
+                // The jquery selector object contain underlying DOM ojects.
+                // get returns <td> DOM object; interface between jQuery and D3. pipe_cell.get(0) == pipe_cell[0]
+                var tree_svg = d3.select(pipe_cell.get(0))
+                    .append("svg")  // appends <svg> object (which is returned)
+                        .attr("height", 90)
+                        .attr("width", 200);
+                    // .attr("class", "d3tree");
+
+                // tree_svg.append("circle")
+                //   .attr('cx', 0)
+                //   .attr('cy', 0)
+                //   .attr('r', 20);
+
+                // Call some function that renders pipeline tree 
+                // renderPipeline(tree_svg, sub_tree);
+                // drawD3tree(tree_svg, data_entry);
+
+                // drawTree(tree_svg, data_entry);
+                drawTree(tree_svg, trimTree(data_entry, "file"));
+            }
+        }
+    }
+}
+
+// Function called on click, before switch is changed.
+function toggleSubtables() {
+  if ($('#subtable-switch').is(':checked')) {
+    // hide subtables
+    $('.subtable').hide(300)  // ms animation
+    $('.num_datasets').show(100)
+  } else {
+    // show subtables
+    $('.subtable').show(300)
+    $('.num_datasets').hide()
+  }
+}
+
+// Assesses table state and hide/shows the specifiied tables.
+function updateState() {
+  if (!$('#subtable-switch').is(':checked')) {
+    // hide subtables
+    $('.subtable').hide()  // ms animation
+    $('.num_datasets').show()
+  } else {
+    // show subtables
+    $('.subtable').show()
+    $('.num_datasets').hide()
+  }
+}
+
+// Filter callback.
+// Typewatch calls a function once the user stops typing or presses enter.
+$('#filter').typeWatch({
+    callback: function(value) {
+        // this. refers to the input object. Value is the value of the input object
+        // alert("typeWatch: " + this.type + ", " + value);
+        var filter = $.trim(value);
+        // console.log("filter: " + filter);
+        updateTable(dtree, filter);
+        updateState();  // hide show based on switch
+    },
+    wait: 500,  // type wait time in ms
+    highlight: true,
+    captureLength: 0  // minimum filter character length
+});
+
+</script>
+
+{% endblock %}

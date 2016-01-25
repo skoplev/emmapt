@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- marked for parsing Markdown -->
+<!-- <script type="text/javascript" src="static/js/vendor/marked.js"></script> -->
+
+<!-- Highlight -->
+<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script> -->
+
+<script type="text/javascript" src="static/vendor/highlight/highlight.pack.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+
+<div class="row">
+	<div class="columns">
+		<!-- test -->
+		<h1>
+		{{file_path}}
+		</h1>
+
+		<!-- <pre><code id="code"></code></pre> -->
+		<!-- <pre><code id="code" class="lang-bash"></code></pre> -->
+		<pre><code id="code" class="{{code_class}}"></code></pre>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+
+// marked.setOptions({
+//     highlight: function(code) {
+//         return hljs.highlightAuto(code).value;
+//     }
+// });
+
+// Retrieve DESCRIPTION.md file from server
+$.ajax({
+    type: "GET",
+    url: "/emmapt/api/readFile/{{file_path}}",
+    success: function(data) {
+        // Load code data
+        $("#code").html(data);
+
+        $("#code").each(function(i, block) {
+        	hljs.highlightBlock(block);
+        });
+    }
+});
+
+
+</script>
+
+{% endblock %}

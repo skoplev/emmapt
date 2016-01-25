@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row toprow">
+  <div class="columns text-left">
+    <h1>Using multiple types of high-throughput biological data</h1>
+    <!-- <h1></h1> -->
+
+    <!-- Motivation and broad description -->
+    <p>Biological data measuring multiple types of molecular entities across experimental platforms has the potential to uncover biological phenomena not apparent by considering each type of data alone. To effectively integrate multiple types of data, however, several challenges associated with data heterogeneity has to be addressed. These challenges are often highly dependent on the experimental platforms in question. One example is the highly studied relationship between gene transcripts and and protein quantities, which is surprisingly uncorrelated raising questions about gene regulation, experimental biases and noise. High-throughput experimental platforms for such measurements rely on a diverse and increasing set of biotechnologies such as DNA microarrays, RNA-sequencing, mass-spectrometry, and protein microarrays. Furthermore, biological systems can be subject to an increasing number of experimental conditions based on, to name a few, CRISPR, RNAi, and small-molecule screening libraries. With the increasing diversity of data generated systematic investigations into how to use multiple types of data could provide researchers with much needed analysis standards.</p>
+
+    <!-- Data descriptions -->
+    <p>To facilitate systematic investigations into how to use multiple types of biological data, bdmerge provides a curated set of reference dataset along with benchmarks for evaluating methods. The datasets are collected both from studies that employ multiple high-throughput methods and from matching experimental conditions in existing databases such as LINCS, CMAP, GEO, and TCGA. In addition to the data from biological experiments synthetic data are generated, which enable evaluations of performance for different methods by comparing how close different methods can infer the synthetic model structure. Community contributions are actively encouraged to achieve a higher coverage of methods and of data types.</p>
+
+    <!-- Various goals of data analysis -->
+    <p>The analysis of biological high-throughput data has a wide range of research goals determined by individual researchers. As a crude approximation of diverse research goals, bdmerge asserts that research goals typically belong to the following 3 classes:
+    <ul>
+      <li>Identifying the molecular effects of an experimental condition.</li>
+      <li>Infering interactions between molecular components.</li>
+      <li>Characterize a diseased biological model.</li>
+    </ul>
+    Such goals are, in practice, constrained to investigating particular biological models or a small collection of such models. As such research conducted for different purposes in different model organisms doesn't have much in common. But, by asserting that biological research usually involve one or several of the mentioned classes it is possible to investigate general data integration methods. In turn such assessments will be of interest to a wide range of researchers dealing with similar data analysis problems. For example, a researcher studying lung cancer might have conducted experiments on cellular models of the cancer in which she investigates the effect of growth factors on gene expression and post-translational modifications. A critical question would be how best to integrate the data on the transcripts with that of the post-translational modifications. Benchmarks of similar integration efforts could guide the analysis by informing about which methods worked in other cases.
+    </p>
+
+    <!-- Principles of a benchmarking metric -->
+    <p>In evaluating whether a method performs better than another it is crucial to have established principles of how to compare the performance of integration methods. Assuming that one method is better than another if it better meets the goals described above provides a starting point for developing a principled benchmark metric. It is unlikely that a single benchmark metric exists which will serve all research purposes. Nonetheless, it would be reasonable to expect that a sufficiently good metric could assist in guiding some aspects of the analysis. As such part of the bdmerge project is to determine a principled benchmarking metric and to investigate how it can be useful to the biological research community.
+
+    <!-- Scope of preliminary phase -->
+    <p>The preliminary phase of the project will emphasize questions regarding the fundamentals of evaluating data integration methods. The scope will be restricted to a handful of datasets which are analyzed in depth. These include synthetic datasets under appropriate models which will have to be developed. Biological datasets will, due to organizational ties, be primarily focused on the data generated through the LINCS project. The data that are initially dealt with will be focused on measures of gene transcripts and proteins. If successful in this domain, the project has natural extensions to metabolites, genetics, epigenetics, and cell morphology</p>
+
+  </div>
+</div>
+
+{% endblock %}

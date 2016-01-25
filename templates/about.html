@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row toprow">
+    <div class="columns medium-6">
+      <h1>The <b>bdmerge</b> project</h1> 
+      <p>The Biological Data Merge project seek to systematically develop and assess methods for integrating data from high-throughput biological experiments across regulatory layers. The approach is to establish standard data collections, develop benchmark methods to evaluate statistical analyses, and make data and methods available as a resource to the research community.</a>
+      </p>
+    </div>
+
+    <div class="columns medium-6">
+      <h1>Project scope</h1>
+      <p>
+      At first, the questions addressed are limited to merging measurements on particular cell lines of transcripts and proteins thus making inferences that are not supported by either data type alone. If successful the project can be extended to more cell lines and other types of data such as genomic, epigenomic, and phenotypic data.
+      </p>
+    </div>
+
+    <img src="static/img/merge_to_model.svg" />
+
+    <hr />
+
+  </div>
+
+<div class="row">
+  <div class="columns medium-6">
+    <h1>Data collection</h1>
+    <p>A publicly available collection of high-quality dataset across multiple types of biological experiments with matching experimental conditions. Also available is a synthetic dataset where the underlying model is known enabling exact evaluation of statistical methods.</p>
+    <p>The biological data is collected from a variety of sources including LINCS, TCPA, TCGA, CMAP, and CCLE. Each data entry contains a pairwise matching based on experimental conditions of 2 different types of data. Firstly, data from a frontier experimental setup such as proteomic mass spectrometry. Secondly, a experimental condition match to standard experiments such as DNA microarray data.</p>
+    <img src="static/img/frontier_query.svg" />
+  </div>
+
+  <div class="columns medium-6">
+  <h1>Comparative data standards</h1>
+  <p>All pairwise data entries adhere to the same overall data format but has flexible metadata fields. This enables semi-automated analysis and comparison across data processing levels.</p>
+
+  <div class="row">
+    <div class="medium-10 medium-centered columns">
+      <img src="static/img/tree_merge.svg" >
+    </div>
+  </div>
+
+  <p>Multiple analysis pipelines are considered as analysis trees with root nodes representing the raw data. The tree structure is used to organize the data collection and also to interactively visualize the data and data processing. Currently, the pipeline trees are stored in a simple folder system which can be accessed by users. For reproducibility, each processing level must contain or make reference to the analysis code.</p>
+  </div>
+
+  <hr />
+</div>
+
+<div class="row">
+
+  <div class="columns medium-6">
+    <h1>Benchmarks</h1>
+    <p>To evaluate statistical methods we provide a limited set of analysis goals which are broadly classified into: 
+    <ul>
+      <li>characterizing cellular models</li>
+      <li>inferring molecular relationships</li>
+      <li>predicting primary effects of experimental cues</li>
+    </ul>
+    Using these goals, and a set of correct answers, we can analyze which methods work better for solving the integration problem and under what circumstances. How to establish what answers are correct is a non-trivial task upon which the success of the project relies. The approach here taken is to use both the synthetic data and the real data along with high-confidence answers such as well-known cellular characteristics, interactions, and small-molecule targets. In addition no single performance metric is likely to be suitable for all purposes.</p>
+  </div>
+
+  <div class="columns medium-6">
+    <h1>Challenges</h1>
+    <p>Scientific challenges can help organize work and facilitate cross-disciplinary research by formulating problems in terms that transcend particular research fields. By issuing a series of scientific challenges based on the benchmarks and data collections, we seek to engage the scientific community in exploring methods for integrating multiple types of high-throughput biological data.</p>
+
+    <p>Proper challenge organization is crucial. For example, by providing participants with encrypted data labels it is possible to control data usage while maintaining biological relevance. In this way, one can ensure that prior knowledge about particular molecules is available only as provided and not from the intuitions of participating biologists or from external sources.</p>
+    <!-- <a href="#" class="medium success button">upload solution</a><br/> -->
+  </div>
+  <hr />
+</div>
+
+<!-- Long project description -->
+<div class="row">
+  <div class="columns medium-6">
+  <h1>Using multiple types of high-throughput biological data</h1>
+
+    <!-- Motivation and broad description -->
+    <p>Biological data measuring multiple types of molecular entities across experimental platforms has the potential to uncover biological phenomena not apparent by considering each type of data alone. To effectively integrate multiple types of data, however, several challenges associated with data heterogeneity has to be addressed. These challenges are often highly dependent on the experimental platforms in question. One example is the highly studied relationship between gene transcripts and and protein quantities, which is surprisingly uncorrelated raising questions about gene regulation, experimental biases and noise. High-throughput experimental platforms for such measurements rely on a diverse and increasing set of biotechnologies such as DNA microarrays, RNA-sequencing, mass-spectrometry, and protein microarrays. Furthermore, biological systems can be subject to an increasing number of experimental conditions based on, to name a few, CRISPR, RNAi, and small-molecule screening libraries. With the increasing diversity of data generated systematic investigations into how to use multiple types of data could provide researchers with much needed analysis standards.</p>
+
+    <!-- Data descriptions -->
+    <p>To facilitate systematic investigations into how to use multiple types of biological data, bdmerge provides a curated set of reference dataset along with benchmarks for evaluating methods. The datasets are collected both from studies that employ multiple high-throughput methods and from matching experimental conditions in existing databases such as LINCS, CMAP, GEO, and TCGA. In addition to the data from biological experiments synthetic data are generated, which enable evaluations of performance for different methods by comparing how close different methods can infer the synthetic model structure. Community contributions are actively encouraged to achieve a higher coverage of methods and of data types.</p>
+
+    <!-- Various goals of data analysis -->
+    <p>The analysis of biological high-throughput data has a wide range of research goals determined by individual researchers. As a crude approximation of diverse research goals, bdmerge asserts that research goals typically belong to the following 3 classes:
+    <ul>
+      <li>Identifying the molecular effects of an experimental condition.</li>
+      <li>Infering interactions between molecular components.</li>
+      <li>Characterize a diseased biological model.</li>
+    </ul>
+    Such goals are, in practice, constrained to investigating particular biological models or a small collection of such models. As such research conducted for different purposes in different model organisms doesn't have much in common. But, by asserting that biological research usually involve one or several of the mentioned classes it is possible to investigate general data integration methods. In turn such assessments will be of interest to a wide range of researchers dealing with similar data analysis problems. For example, a researcher studying lung cancer might have conducted experiments on cellular models of the cancer in which she investigates the effect of growth factors on gene expression and post-translational modifications. A critical question would be how best to integrate the data on the transcripts with that of the post-translational modifications. Benchmarks of similar integration efforts could guide the analysis by informing about which methods worked in other cases.
+    </p>
+
+    <!-- Principles of a benchmarking metric -->
+    <p>In evaluating whether a method performs better than another it is crucial to have established principles of how to compare the performance of integration methods. Assuming that one method is better than another if it better meets the goals described above provides a starting point for developing a principled benchmark metric. It is unlikely that a single benchmark metric exists which will serve all research purposes. Nonetheless, it would be reasonable to expect that a sufficiently good metric could assist in guiding some aspects of the analysis. As such part of the bdmerge project is to determine a principled benchmarking metric and to investigate how it can be useful to the biological research community.
+
+    <!-- Scope of preliminary phase -->
+    <p>The preliminary phase of the project will emphasize questions regarding the fundamentals of evaluating data integration methods. The scope will be restricted to a handful of datasets which are analyzed in depth. These include synthetic datasets under appropriate models which will have to be developed. Biological datasets will, due to organizational ties, be primarily focused on the data generated through the LINCS project. The data that are initially dealt with will be focused on measures of gene transcripts and proteins. If successful in this domain, the project has natural extensions to metabolites, genetics, epigenetics, and cell morphology</p>
+
+  </div>
+</div>
+
+{% endblock %}

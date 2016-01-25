@@ -1,0 +1,204 @@
+footer {
+	/*border-top: 1px solid #ddd;*/
+	/*background: rgb(200, 200, 200);*/
+	color: rgb(150, 150, 150);
+}
+
+body {
+	/*background-color: rgb(245, 245, 245);*/
+}
+
+object {
+	height: auto;
+}
+
+img {
+	width: 100%;
+	margin: 30px 0;
+}
+
+/* Foundation specific 
+.page-header {
+	/*padding-top: 1em;*/
+	/*padding-bottom: 40px;*/
+	border-bottom: 1px solid #ddd;
+	/*margin-bottom: 20px;*/
+}
+
+.row {
+	background-color: white;
+}
+
+.columns {
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.toprow {
+	margin-top: 30px;
+}
+
+
+div.challenge {
+	/*margin: 50px 50px;*/
+	/*margin: 50px 50px;*/
+}
+
+img.DCIC-logo {
+	width: 100px;
+	/*max-height: 100px;*/
+}
+
+img.Icahn-logo {
+	width: 60px;
+}
+
+img.LINCS-logo {
+	width: 150px;
+}
+
+/*Tables */
+tr.separator {
+	border-bottom: 1px solid rgb(150, 150, 150);
+}
+
+.hidden {
+	/*visibility: hidden;*/
+	display: none;
+}
+
+/* Hidden tables styling */
+
+table.subtable {
+	box-shadow: 3px 5px 5px rgb(210, 210, 210);
+
+}
+
+/* blue header with white text */
+table.subtable > thead {
+	/*background-color: rgb(107, 174, 214);  */
+	/*background-color: rgb(222, 235, 255);  */
+	/*background-color: rgb(198, 219, 239);  */
+	background-color: rgb(222, 235, 247);  
+}
+table.subtable > thead > tr > th {
+	/*color: white;*/
+}
+
+/* Odd background color */
+table.subtable tr:nth-of-type(even) {
+    /*background-color: rgb(239, 249, 252) !important;*/
+    background-color: rgb(247, 251, 255) !important;
+}
+
+
+.panel {
+	background: white;
+}
+
+
+a:hover {
+	/* Lighter blue hover */
+	color: rgb(107, 174, 214);
+}
+
+
+/* Font sizes */
+
+h1 {
+	font-size: xx-large;
+}
+
+h2 {
+	font-size: x-large;
+}
+
+h3 {
+	font-size: large;
+}
+
+h4 {
+	font-size: medium;
+}
+
+code {
+	/* code blokcs */
+	display: block;  
+	margin-bottom: 20px;
+	white-space: pre-wrap;
+	border-radius: 5px;
+	/*background: white;*/
+}
+
+/*.wrapped-text {
+	white-space: pre-wrap;
+}*/
+
+
+
+g.selected * {
+	fill: black !important;
+	font-weight: bold !important;
+}
+
+/* D3 tree visualization */
+g.node:hover * {
+	/*fill: black !important;*/
+	cursor: pointer !important;
+	font-weight: bold !important;
+	stroke-width: 2px !important;
+	/*z-index: 0 !important;*/
+}
+
+a.button {
+	margin: 0;
+	padding: 5px;
+}
+
+button.button {
+	margin: 0;
+	padding: 5px;
+}
+
+
+.multi-select {
+	width: 100%;
+}
+
+
+/*select.matrix-select {
+	margin-bottom: 20px;
+}
+*/
+
+label {
+	margin-top: 15px;
+}
+
+div.Tokenize.match-select > ul.TokensContainer {
+	height: 50px;
+}
+
+div.Tokenize.subset-select > ul.TokensContainer {
+	height: 100px;
+}
+
+
+.main text {
+    font: 10px sans-serif;	
+}
+
+.axis line, .axis path {
+    shape-rendering: crispEdges;
+    stroke: black;
+    fill: none;
+}
+
+circle {
+    /*fill: steelblue;*/
+    /*fill: rgba(8, 48, 107, 0.2);*/
+    fill: rgba(0, 0, 0, 0.5);
+
+}
+
+

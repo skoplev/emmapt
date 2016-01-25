@@ -1,0 +1,16 @@
+{
+	"name": "root",
+	"children": [
+		{"name": "child 1", "children": [
+			{"name": "apple"},
+			{"name": "tomato", "value": 10}
+			]
+		},
+		{"name": "bob", "children": [
+			{"name": "charles"},
+			{"name": "lisa"}
+			]
+		},
+		{"name": "child 2"}
+	]
+}

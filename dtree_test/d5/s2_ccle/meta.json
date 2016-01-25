@@ -1,0 +1,9 @@
+{
+	"Source": "CCLE",
+	"Disease": "Cancer cell line",
+	"Type": "Transcriptomics",
+	"Assay": "DNA microarray (mRNA)",
+	"Features": 18988,
+	"Cell_lines": 59,
+	"Conditions": 1
+}
