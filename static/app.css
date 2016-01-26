@@ -4,10 +4,6 @@ footer {
 	color: rgb(150, 150, 150);
 }
 
-body {
-	/*background-color: rgb(245, 245, 245);*/
-}
-
 object {
 	height: auto;
 }
@@ -21,9 +17,9 @@ img {
 .page-header {
 	/*padding-top: 1em;*/
 	/*padding-bottom: 40px;*/
-	border-bottom: 1px solid #ddd;
+	/*border-bottom: 1px solid #ddd;*/
 	/*margin-bottom: 20px;*/
-}
+/*}*/
 
 .row {
 	background-color: white;
@@ -62,13 +58,16 @@ tr.separator {
 	border-bottom: 1px solid rgb(150, 150, 150);
 }
 
+table > tr > td {
+	padding: 0;
+}
+
 .hidden {
 	/*visibility: hidden;*/
 	display: none;
 }
 
 /* Hidden tables styling */
-
 table.subtable {
 	box-shadow: 3px 5px 5px rgb(210, 210, 210);
 
@@ -102,24 +101,36 @@ a:hover {
 	color: rgb(107, 174, 214);
 }
 
-
 /* Font sizes */
-
 h1 {
-	font-size: xx-large;
-}
-
-h2 {
 	font-size: x-large;
 }
 
-h3 {
+h2 {
 	font-size: large;
 }
 
-h4 {
+h3 {
 	font-size: medium;
 }
+
+h4 {
+	font-size: small;
+}
+
+p {
+	font-size: small;
+}
+
+/* List sizes */
+li {
+	font-size: small;
+}
+
+span.tooltip {
+	font-size: x-small;
+}
+
 
 code {
 	/* code blokcs */
@@ -127,14 +138,9 @@ code {
 	margin-bottom: 20px;
 	white-space: pre-wrap;
 	border-radius: 5px;
+	font-size: small;
 	/*background: white;*/
 }
-
-/*.wrapped-text {
-	white-space: pre-wrap;
-}*/
-
-
 
 g.selected * {
 	fill: black !important;
@@ -158,18 +164,13 @@ a.button {
 button.button {
 	margin: 0;
 	padding: 5px;
+	font-size: small;
 }
 
 
 .multi-select {
 	width: 100%;
 }
-
-
-/*select.matrix-select {
-	margin-bottom: 20px;
-}
-*/
 
 label {
 	margin-top: 15px;
@@ -198,7 +199,4 @@ circle {
     /*fill: steelblue;*/
     /*fill: rgba(8, 48, 107, 0.2);*/
     fill: rgba(0, 0, 0, 0.5);
-
 }
-
-

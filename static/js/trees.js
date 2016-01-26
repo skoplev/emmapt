@@ -55,7 +55,7 @@ function drawTree(svg, data, info_div) {
 
 		// Clicking nodes in the tree, callback function.
 		node.on("click", function(d) {
-			// window.location = "/bdmerge/" + d.path;  // load file using the bdmerge/dtree interface
+			// window.location = "/emmapt/" + d.path;  // load file using the emmapt/dtree interface
 
 
 			// Unselect everything except the node clicked
@@ -116,12 +116,12 @@ function updateInfo(info_div, item) {
 				.append($("<div>").attr("class", "column text-right")
 					.append($("<a>")
 						.attr("class", "text-right")
-						.attr("href", "/bdmerge/download/" + item.path)
+						.attr("href", "/emmapt/download/" + item.path)
 						.text("download")
 					)
 					.append(" ")
 					.append($("<a>")
-						.attr("href", "/bdmerge/" + item.path)
+						.attr("href", "/emmapt/" + item.path)
 						.text("view")
 					)
 				)
@@ -138,12 +138,12 @@ function updateInfo(info_div, item) {
 				.append($("<div>").attr("class", "column text-right")
 					.append($("<a>")
 						.attr("class", "text-right")
-						.attr("href", "/bdmerge/download/" + item.path)
+						.attr("href", "/emmapt/download/" + item.path)
 						.text("download")
 					)
 					.append(" ")
 					.append($("<a>")
-						.attr("href", "/bdmerge/" + item.path)
+						.attr("href", "/emmapt/" + item.path)
 						.text("view")
 					)
 				)
@@ -212,7 +212,7 @@ function updateInfo(info_div, item) {
 		// Request HDF5 meta data and populate selection form
 		$.ajax({
 			type: "GET",
-			url: "/bdmerge/api/h5meta/" + item.path,
+			url: "/emmapt/api/h5meta/" + item.path,
 			success: function(meta_data) {
 				// Create HDF5 selection form
 

@@ -74,9 +74,6 @@
         <div class="columns">
             <h1>Data collections</h1>
         </div>
-
-        <!-- <input type="text" name="firstname" value="gandalf" /> -->
-        <!-- <input type="submit" value="submit" /> -->
 </div>
 
 </form>
@@ -119,20 +116,6 @@ $(document).ready(function() {
     // $("#benchmark-button").attr("href", "bench/{{data_collection}}");
     // $("#download-button").attr("href", "download/dtree/{{data_collection}}");
     $("#download-button").attr("onclick", "location.href='download/dtree/{{data_collection}}'");
-
-//     $("#header-right")
-//         .append($("<a>")
-//             .attr("href", "bench/dtree/{{data_collection}}")
-//             .attr("class", "button")
-//             .text("bench")
-//         )
-//         .append($("<a>")
-//             .attr("href", "download/dtree/{{data_collection}}")
-//             .attr("class", "button success")
-//             .text("download")
-//         )
-//         ;
-
 });
 
 // AJAX call retrieving file tree for the specified data collection.
@@ -234,7 +217,7 @@ d3.json("/emmapt/api/getdtree/{{data_collection}}", function(error, data_file_tr
 // Retrieve DESCRIPTION.md file from server
 $.ajax({
     type: "GET",
-    url: "/bdmerge/api/readFile/{{data_collection}}/DESCRIPTION.md",
+    url: "/emmapt/api/readFile/{{data_collection}}/DESCRIPTION.md",
     success: function(data) {
         $("div#description").html(marked(data));
 
@@ -260,7 +243,7 @@ makeNavLinks = function(path) {
     nav.append("/");
 
     nav.append($("<a>")
-        .attr("href", "/bdmerge/browse")
+        .attr("href", "/emmapt/browse")
         .text("project")
         );
 
@@ -274,7 +257,7 @@ makeNavLinks = function(path) {
             .join("/")
 
         nav.append($("<a>")
-            .attr("href", "/bdmerge/project/" + node_path)
+            .attr("href", "/emmapt/project/" + node_path)
             .text(nodes[i])
             );
 

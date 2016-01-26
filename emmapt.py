@@ -3,7 +3,7 @@
 # for production use (specifies __debug__ = False):
 #!/usr/bin/env python -O
 
-# Default at http://localhost:5000/bdmerge
+# Default at http://localhost:5000/emmapt
 
 # Dynamic page generation of data folder structure
 
@@ -265,7 +265,7 @@ def browsePage():
 		title="Download")
 
 # Note that the download implementation currently allows one to download anything which is referenced in
-# the /bdmergepy folder. Which would be a major security risk in production.
+# the /emmapt folder. Which would be a major security risk in production.
 @app.route('/emmapt/download/dtree/<path:file_name>')
 def download(file_name):
 	target_path = os.path.join(app.root_path, "dtree", file_name)
