@@ -34,7 +34,6 @@ img {
 	margin-top: 30px;
 }
 
-
 div.challenge {
 	/*margin: 50px 50px;*/
 	/*margin: 50px 50px;*/
@@ -70,7 +69,11 @@ table > tr > td {
 /* Hidden tables styling */
 table.subtable {
 	box-shadow: 3px 5px 5px rgb(210, 210, 210);
+	/*padding: 0;*/
+}
 
+table.subtable td {
+	/*padding: 0;*/
 }
 
 /* blue header with white text */
@@ -90,15 +93,26 @@ table.subtable tr:nth-of-type(even) {
     background-color: rgb(247, 251, 255) !important;
 }
 
+table.subtable td {
+	font-size: x-small;
+}
+
+table.subtable th {
+	font-size: x-small;
+}
 
 .panel {
 	background: white;
 }
 
-
 a:hover {
 	/* Lighter blue hover */
 	color: rgb(107, 174, 214);
+}
+
+/* Default font size */
+body {
+	font-size: small;
 }
 
 /* Font sizes */
@@ -131,14 +145,12 @@ span.tooltip {
 	font-size: x-small;
 }
 
-
 code {
 	/* code blokcs */
 	display: block;  
 	margin-bottom: 20px;
 	white-space: pre-wrap;
 	border-radius: 5px;
-	font-size: small;
 	/*background: white;*/
 }
 
@@ -167,13 +179,13 @@ button.button {
 	font-size: small;
 }
 
-
 .multi-select {
 	width: 100%;
 }
 
 label {
 	margin-top: 15px;
+	/*font-size: x-small;*/
 }
 
 div.Tokenize.match-select > ul.TokensContainer {
@@ -183,7 +195,6 @@ div.Tokenize.match-select > ul.TokensContainer {
 div.Tokenize.subset-select > ul.TokensContainer {
 	height: 100px;
 }
-
 
 .main text {
     font: 10px sans-serif;	
@@ -195,8 +206,12 @@ div.Tokenize.subset-select > ul.TokensContainer {
     fill: none;
 }
 
-circle {
+svg circle {
     /*fill: steelblue;*/
     /*fill: rgba(8, 48, 107, 0.2);*/
     fill: rgba(0, 0, 0, 0.5);
+}
+
+svg text.label {
+	font-size: 8px;
 }

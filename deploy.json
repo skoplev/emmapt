@@ -1,12 +1,12 @@
 {
-	"id": "bdmerge",
+	"id": "emmapt",
 	"instances": 1,
 	"cpus": 1,
 	"mem": 1024,
 	"container": {
 		"type": "DOCKER",
 		"docker": {
-			"image": "146.203.54.165:5000/bdmerge:latest",
+			"image": "146.203.54.165:5000/emmapt:latest",
 			"forcePullImage": true,
 			"network": "BRIDGE",
 			"portMappings": [
@@ -19,9 +19,14 @@
 		},
 		"volumes": [
 		    {
-		      "containerPath": "/bdmerge/dtree",
-		      "hostPath": "/hadoop/hdfs-mount/apps/bdmerge/dtree",
+		      "containerPath": "/emmapt/dtree",
+		      "hostPath": "/hadoop/hdfs-mount/apps/emmapt/dtree",
 		      "mode": "RW"
+		    },
+		    {
+		    	"containerPath": "/emmapt/tmp",
+		    	"hostPath": "/hadoop/hdfs-mount/apps/emmapt/tmp",
+		    	"mode": "RW"
 		    }
 		]
 	},

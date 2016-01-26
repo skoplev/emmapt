@@ -24,6 +24,12 @@ import h5py  # for opening HDF5 files
 import jsonpickle  # json serializer
 import numpy as np
 import subprocess
+import time
+import datetime
+
+# Scheduler
+from apscheduler.scheduler import Scheduler
+import logging
 
 def zipdir(path, ziph):
 	# ziph is zipfile handle
@@ -132,9 +138,43 @@ def makeTree(node_path):
 
 	return tree
 
+
+
+
+
+# Flask application
+# ---------------------------------
 app = Flask(__name__, static_url_path='/emmapt/static', static_folder='static')
 app.debug = __debug__
 
+# Initialize scheduler
+scheduler = Scheduler()
+scheduler.start()  # init
+
+logging.basicConfig()  # initializes logging, which is required for 
+
+# Clean the ./tmp folder in seconds intervals.
+# Removes folders and files that are older than the specified number of minutes
+@scheduler.interval_schedule(seconds=2)
+def cleanTemporaryDirectories(storage_time_minutes=60*24*30):
+	print "storage time: ", storage_time_minutes
+	# Loop over entries in the temporary directory
+	for name in os.listdir("./tmp"):
+		path = "./tmp/" + name
+		# calculate time since creation, in minutes
+		ellapsed_time_minutes = (time.time() - os.path.getmtime(path)) / 60
+
+		if ellapsed_time_minutes > storage_time_minutes:
+			# remove file or folder (recursively)
+			if os.path.isfile(path):
+				os.remove(path)
+			elif os.path.isdir(path):
+				print "/tmp cleanup. too old removing folder " + path
+				shutil.rmtree(path)
+
+@app.before_first_request
+def initialize():
+	print "initializing"
 
 # INTERFACE
 # -------------------------------------------------------
@@ -373,7 +413,7 @@ def benchmark():
 
 	# make random folder for output
 	results_code = randString(results_code_size)
-	results_path = "benchmarks/" + results_code
+	results_path = "tmp/" + results_code
 	os.mkdir(results_path)
 
 	# Write config as file
@@ -499,4 +539,6 @@ def filePage(file_path):
 
 if __name__ == "__main__":
 	# app.run(host="0.0.0.0", port=80)
-	app.run(host="0.0.0.0", port=5000)
+	app.run(host="0.0.0.0", port=5000, use_reloader=False)  # disables use_reloader, initializes only once
+	# app.run(host="0.0.0.0", port=5000)
+

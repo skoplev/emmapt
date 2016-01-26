@@ -37,7 +37,8 @@ RUN pip install \
 	numpy \
 	cython \
 	jsonpickle \
-	h5py
+	h5py \
+	apscheduler==2.1.2
 
 # R Bioconductor installs
 RUN Rscript -e "source('http://bioconductor.org/biocLite.R'); biocLite('affy'); biocLite('rhdf5')"
