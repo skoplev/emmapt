@@ -155,7 +155,7 @@ logging.basicConfig()  # initializes logging, which is required for
 
 # Clean the ./tmp folder in seconds intervals.
 # Removes folders and files that are older than the specified number of minutes
-@scheduler.interval_schedule(seconds=3600)
+@scheduler.interval_schedule(seconds=3600*24)
 def cleanTemporaryDirectories(storage_time_minutes=60*24*30):
 	# Loop over entries in the temporary directory
 	for name in os.listdir("./tmp"):
@@ -376,30 +376,14 @@ def projectPage(collection):
 
 @app.route('/emmapt/bench', methods=["POST"])
 def benchmark():
-	results_code_size = 50
+	results_code_size = 50  # code length
 	# Load necesary data
-	# data = request.json
-	# print "post data: "
-	# print data
-	# print json.dumps(data)
-
-	# print request.form["firstname"]
-	# print request.form  # immutable dictionary
-
-	# print request.args
-	# print request.form  # get all post field names
-	# print request.form.keys()
-
-	# print request.form.keys()[2]
-	# print request.form.keys()[2].split("/", 1)  # split by first '/'
 
 	# Interpret POST request
 	file_options = dict()  # path -> cmd -> [arguments]
 	options = dict()  # general options
 	# Loop over POST variable names
 	for key in request.form:
-		# print request.form.getlist(key)
-
 		a = key.split("/", 1)
 		if len(a) == 2:
 			# POST input has both command and path
@@ -417,24 +401,16 @@ def benchmark():
 	pprint(file_options)
 	pprint(options)
 
-	# make random folder for output
+	# make random folder name for output in tmp/ folder
 	results_code = randString(results_code_size)
 	results_path = "tmp/" + results_code
 	os.mkdir(results_path)
 
-	# Write config as file
+	# Write config as file to 
 	with open(results_path + "/config.json", "w") as config_file:
 		json.dump(dict(input=file_options, opts=options), config_file, indent=4, sort_keys=True)
 
 	# Call method in r
-	# os.system("methods/crossCorSample.r -c " + results_path + "/config.json" + " -o " + results_path)
-
-	# method_output = subprocess.check_output(
-	# 	["methods/crossCorSample.r", "-c", results_path + "/config.json", "-o", results_path],
-	# 	stderr=subprocess.PIPE
-	# 	)
-
-	# try:
 	try:
 		method_output = subprocess.check_output(
 			["methods/crossCorSample.r", "-c", results_path + "/config.json", "-o", results_path],

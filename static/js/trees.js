@@ -8,7 +8,6 @@ function drawTree(svg, data, info_div) {
 	var width = parseInt(svg.style('width'), 10);  // removes "px"
 	var height = parseInt(svg.style('height'), 10);
 
-
 	// Make svg group for elements
 	var svg_group = svg.append("g")
 		.attr("transform", "translate(30,6)");
@@ -55,9 +54,6 @@ function drawTree(svg, data, info_div) {
 
 		// Clicking nodes in the tree, callback function.
 		node.on("click", function(d) {
-			// window.location = "/emmapt/" + d.path;  // load file using the emmapt/dtree interface
-
-
 			// Unselect everything except the node clicked
 			var self = this;  // the node clicked, JS reference
 			svg_group.selectAll("g.node")
@@ -73,7 +69,6 @@ function drawTree(svg, data, info_div) {
 
 			// Update info <div>
 			if (this_node.classed("selected")) {
-				//
 				updateInfo(info_div, d);  // passing the node data 
 			} else {
 				// default visualization, no node is selected

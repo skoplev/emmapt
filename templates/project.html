@@ -52,9 +52,16 @@
     <!-- Action bar -->
     <div class="small-6 columns text-right" id="header-right">
 
-        <span data-tooltip aria-haspopup="true" class="has-tip" title="Benchmark analysis with custom data selection.<br><br>The selection is based on the file trees shown in the data collections section below. Currently, only data in the .h5 format is supported for analysis. Data from 2 collections must be selected along with approriate matching fields.">
+<!--         <span data-tooltip aria-haspopup="true" class="has-tip" title="Benchmark analysis with custom data selection.<br><br>The selection is based on the file trees shown in the data collections section below. Currently, only data in the .h5 format is supported for analysis. Data from 2 collections must be selected along with approriate matching fields.">
             <button type="submit" id="benchmark-button" class="button">benchmark</button>
         </span>
+ -->
+        <!-- <span data-tooltip aria-haspopup="true" class="has-tip tip-left" title="Benchmark analysis with custom data selection.<br><br>The selection is based on the file trees shown in the data collections section below. Currently, only data in the .h5 format is supported for analysis. Data from 2 collections must be selected along with approriate matching fields."> -->
+            <button type="submit" href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="button dropdown">methods</button>
+            <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true">
+                <li><input type="hidden" name="method" value="MUTCO"><a onclick="$(this).closest('form').submit()">MUTCO</a></input></li>
+            </ul>
+        <!-- </span> -->
 
         <span data-tooltip aria-haspopup="true" class="has-tip" title="Download entire project tree.">
             <button type="button" id="download-button" class="button success">download</button>
