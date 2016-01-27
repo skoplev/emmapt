@@ -155,9 +155,8 @@ logging.basicConfig()  # initializes logging, which is required for
 
 # Clean the ./tmp folder in seconds intervals.
 # Removes folders and files that are older than the specified number of minutes
-@scheduler.interval_schedule(seconds=2)
+@scheduler.interval_schedule(seconds=3600)
 def cleanTemporaryDirectories(storage_time_minutes=60*24*30):
-	print "storage time: ", storage_time_minutes
 	# Loop over entries in the temporary directory
 	for name in os.listdir("./tmp"):
 		path = "./tmp/" + name
@@ -171,10 +170,6 @@ def cleanTemporaryDirectories(storage_time_minutes=60*24*30):
 			elif os.path.isdir(path):
 				print "/tmp cleanup. too old removing folder " + path
 				shutil.rmtree(path)
-
-@app.before_first_request
-def initialize():
-	print "initializing"
 
 # INTERFACE
 # -------------------------------------------------------
@@ -208,6 +203,7 @@ def readFile(file_path):
 # Reads meta.json fiels. Returns nested json object.
 @app.route("/emmapt/api/meta/dtree/<path:collection>")
 def getMetaData(collection):
+	# print "getMetaData called"
 	# Get target path
 	target_path = os.path.join(app.root_path, "dtree", collection)
 
@@ -244,8 +240,6 @@ def getH5Meta(collection):
 	# Open HDF5 file
 	f = h5py.File(target_path, "r")
 
-	# print type(f.keys())
-
 	meta = dict()
 
 	# Get all entries to 
@@ -273,6 +267,18 @@ def getH5Meta(collection):
 		unique_list = [str(entry) for entry in unique_list]  # force string format for json encoding compatability
 
 		meta["col_fields_values"].append(unique_list)
+
+	# get default selection of data entry, from root data collection meta.json file
+	collection_path = collection.split("/")
+	base_entry = collection_path[0] + "/" + collection_path[1]
+	with open(os.path.join(app.root_path, "dtree", collection_path[0], collection_path[1], "meta.json")) as json_file:
+		try:
+			collection_meta = json.load(json_file)
+			meta["default_match"] = collection_meta["default_match"]
+		except ValueError:
+			print "Decoding JSON failed: ", collection_path
+		except KeyError:
+			pass
 
 	return jsonify(meta)
 
@@ -539,6 +545,6 @@ def filePage(file_path):
 
 if __name__ == "__main__":
 	# app.run(host="0.0.0.0", port=80)
-	app.run(host="0.0.0.0", port=5000, use_reloader=False)  # disables use_reloader, initializes only once
-	# app.run(host="0.0.0.0", port=5000)
+	# app.run(host="0.0.0.0", port=5000, use_reloader=False)  # disables use_reloader, initializes only once
+	app.run(host="0.0.0.0", port=5000)
 

@@ -122,6 +122,8 @@ $(document).ready(function() {
 d3.json("/emmapt/api/getdtree/{{data_collection}}", function(error, data_file_tree) {
     if (error) throw error;
 
+    // console.log(data_file_tree.meta.default_exp_id);
+
     // Project header containing the project title and subtitle from the root meta.json file.
     try {
         $("#title")

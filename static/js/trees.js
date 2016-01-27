@@ -200,15 +200,6 @@ function updateInfo(info_div, item) {
 
 		var subset_select_field = info_div.find(".subset-select-fields");  // reference
 
-
-		// info_div.append($("<label>").text())
-		// info_div.append($("<select>")
-		// 	.attr("class", "subset-select")
-		// 	.attr("multiple", "multiple")
-		// 	);
-
-		// var subset_select = info_div.find(".subset-select");
-
 		// Request HDF5 meta data and populate selection form
 		$.ajax({
 			type: "GET",
@@ -218,12 +209,21 @@ function updateInfo(info_div, item) {
 
 				// Column field names of HDF5 column meta data
 				for (var i in meta_data.col_fields) {
-					// select
+					// select match condition
 					entry = meta_data.col_fields[i];
-					match_selection_box.append($("<option>")
+
+					var option = ($("<option>")
 						.attr("value", entry)
 						.text(entry)
-					);
+					).appendTo(match_selection_box);
+
+					if ("default_match" in meta_data) {
+						// Lookup if the selector entry is default
+						if (meta_data.default_match.indexOf(entry) > -1) {
+							// default
+							option.attr("selected", "");
+						} 
+					}  // else no defaults
 
 					// Add entry to subset selector
 					subset_select_field.append($("<option>")
