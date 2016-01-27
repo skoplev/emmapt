@@ -7,7 +7,7 @@
 
 # Dynamic page generation of data folder structure
 
-from flask import Flask, render_template, jsonify, send_file, after_this_request, request
+from flask import Flask, render_template, jsonify, send_file, after_this_request, request, redirect, url_for
 from pprint import pprint
 import json
 
@@ -374,46 +374,49 @@ def projectPage(collection):
 		title="Project: " + collection)
 
 
-@app.route('/emmapt/bench', methods=["POST"])
-def benchmark():
-	results_code_size = 50  # code length
-	# Load necesary data
+@app.route('/emmapt/runMethod', methods=["POST"])
+def runMethod():
+	results_code_size = 50  # code length of result id's
 
 	# Interpret POST request
-	file_options = dict()  # path -> cmd -> [arguments]
-	options = dict()  # general options
+
+	config = dict()
+	config["method"] = request.form["method"]
+	config["input"] = dict()  # path -> cmd -> [arguments]
+	config["options"] = dict()  # general options
 	# Loop over POST variable names
 	for key in request.form:
-		a = key.split("/", 1)
-		if len(a) == 2:
+		command_path = key.split("/", 1)  # first '/' is used to separate command from path
+		if len(command_path) == 2:
 			# POST input has both command and path
-			cmd = a[0]
-			path = a[1]  # unique identifier for submitted data matrices
+			cmd = command_path[0]
+			path = command_path[1]  # unique identifier for submitted data matrices
 
 			# init HDF5 path if not previously seen
-			if not path in file_options:
-				file_options[path] = dict()  # list of commands on the form (cmd, [arguments])
+			if not path in config["input"]:
+				config["input"][path] = dict()  # list of commands on the form (cmd, [arguments])
  
-			file_options[path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
-		else:
-			options[key] = request.form.getlist(key)
+			config["input"][path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
+		elif key != "method":
+			config["options"][key] = request.form.getlist(key)
 
-	pprint(file_options)
-	pprint(options)
+	# pprint(file_options)
+	# pprint(options)
 
 	# make random folder name for output in tmp/ folder
-	results_code = randString(results_code_size)
-	results_path = "tmp/" + results_code
+	result_id = randString(results_code_size)
+	results_path = "tmp/" + result_id
 	os.mkdir(results_path)
 
 	# Write config as file to 
 	with open(results_path + "/config.json", "w") as config_file:
-		json.dump(dict(input=file_options, opts=options), config_file, indent=4, sort_keys=True)
+		# json.dump(dict(method=request.form["method"], input=file_options, opts=options), config_file, indent=4, sort_keys=True)
+		json.dump(config, config_file, indent=4, sort_keys=True)
 
 	# Call method in r
 	try:
 		method_output = subprocess.check_output(
-			["methods/crossCorSample.r", "-c", results_path + "/config.json", "-o", results_path],
+			["methods/" + config["method"], "-c", results_path + "/config.json", "-o", results_path],
 			stderr=subprocess.STDOUT
 			# stdout=subprocess.STDOUT,
 			# shell=True
@@ -423,39 +426,31 @@ def benchmark():
 		# Transform to RunrimeError which es handled by Flask
 		raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
+	# Get the Flask visualizer function name
+	visualizer = "result" + os.path.splitext(config["method"])[0]
 
-	# Read files, TODO separate
-	# send as data
+	# Redirect to output page for specific method
+	return redirect(url_for(visualizer, result_id=result_id))
+
+# Route to the result of running a method, with particular id. 
+# Data is stored on the server in the /tmp folder which
+# is occasionally cleaned for old entries.
+@app.route("/emmapt/resultMUTCO/<result_id>")
+def resultMUTCO(result_id):
+	result_path = "tmp/" + result_id
+
+	# Load the config file
+	with open(result_path + "/config.json") as json_file:
+		config = json.load(json_file)
 
 	# Read data
-	cor1 = h5py.File(results_path + "/sampleCor1.h5", "r")
-	cor2 = h5py.File(results_path + "/sampleCor2.h5", "r")
-	results = h5py.File(results_path + "/results.h5", "r")
-
+	cor1 = h5py.File(result_path + "/sampleCor1.h5", "r")
+	cor2 = h5py.File(result_path + "/sampleCor2.h5", "r")
+	results = h5py.File(result_path + "/results.h5", "r")
 
 	results_table = results["lower_tri"][()]  # read entire table into memory
 
-	# print np.reshape(cor1["cmat"], 1)
-	# print cor1["cmat1"].reshape
-	# Lower triangle
-	# print np.tril(cor1["cmat"], k=-1)
-
-	# # Loop over correlation matrices generating the data structure for D3
-	# it1 = np.nditer(cor1["cmat"], flags=["f_index"], op_dtypes=["float64"], casting=["same_kind"])
-	# it2 = np.nditer(cor2["cmat"], flags=["f_index"], op_dtypes=["float64"], casting=["same_kind"])
-
-	cross_cor_data = list()
-
-	# # keep track of index
-	# while not it1.finished:
-	# 	# print it1[0], it1.index
-	# 	cross_cor_data.append([it1[0], it2[0]])
-
-	# 	it1.iternext()
-	# 	it2.iternext()
-
-	return render_template('benchmark.html', opts=json.dumps(file_options), data_set=json.dumps(results_table.tolist()))
-
+	return render_template('resultMUTCO.html', opts=json.dumps(config), data_set=json.dumps(results_table.tolist()))
 
 @app.route('/emmapt/dtree/<path:file_path>')
 def filePage(file_path):
