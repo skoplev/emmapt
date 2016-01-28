@@ -373,17 +373,64 @@ def projectPage(collection):
 		data_collection=collection,  # data collection
 		title="Project: " + collection)
 
-
-@app.route('/emmapt/runMethod', methods=["POST"])
-def runMethod():
+# Configuration of method
+@app.route("/emmapt/setupMethod", methods=["POST"])
+def setupMethod():
 	results_code_size = 50  # code length of result id's
 
-	# Interpret POST request
+	# make random folder name for output in tmp/ folder
+	request_id = randString(results_code_size)
+	results_path = "tmp/" + request_id
+	os.mkdir(results_path)
 
+	# Interpret POST request
 	config = dict()
 	config["method"] = request.form["method"]
 	config["input"] = dict()  # path -> cmd -> [arguments]
+
 	config["options"] = dict()  # general options
+	# Loop over POST variable names
+	for key in request.form:
+		command_path = key.split("/", 1)  # first '/' is used to separate command from path
+		if len(command_path) == 2:
+			# POST input has both command and path
+			cmd = command_path[0]
+			path = command_path[1]  # unique identifier for submitted data matrices
+
+			# init HDF5 path if not previously seen
+			if not path in config["input"]:
+				config["input"][path] = dict()  # list of commands on the form (cmd, [arguments])
+	
+			config["input"][path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
+		elif key != "method":
+			config["options"][key] = request.form.getlist(key)
+
+	# Write config as file to 
+	with open(results_path + "/config.json", "w") as config_file:
+		json.dump(config, config_file, indent=4, sort_keys=True)
+
+	setup_form = "setup" + os.path.splitext(config["method"])[0]
+
+	return render_template(setup_form + ".html", request_id=request_id, h5input_files=config["input"].keys())
+
+
+@app.route('/emmapt/runMethod/<request_id>', methods=["POST"])
+def runMethod(request_id):
+	# results_code_size = 50  # code length of result id's
+
+	results_path = "tmp/" + request_id
+
+	# Open config from file
+	with open(results_path + "/config.json") as json_file:
+		config = json.load(json_file)
+
+	# Interpret POST request modifying the config file accordingly
+	# config["method"] = request.form["method"]
+	if not "input" in config:
+		config["input"] = dict()  # path -> cmd -> [arguments]
+
+	if not "options" in config:
+		config["options"] = dict()  # general options
 	# Loop over POST variable names
 	for key in request.form:
 		command_path = key.split("/", 1)  # first '/' is used to separate command from path
@@ -400,17 +447,13 @@ def runMethod():
 		elif key != "method":
 			config["options"][key] = request.form.getlist(key)
 
-	# pprint(file_options)
-	# pprint(options)
-
-	# make random folder name for output in tmp/ folder
-	result_id = randString(results_code_size)
-	results_path = "tmp/" + result_id
-	os.mkdir(results_path)
+	# # make random folder name for output in tmp/ folder
+	# result_id = randString(results_code_size)
+	# results_path = "tmp/" + request_id
+	# os.mkdir(results_path)
 
 	# Write config as file to 
 	with open(results_path + "/config.json", "w") as config_file:
-		# json.dump(dict(method=request.form["method"], input=file_options, opts=options), config_file, indent=4, sort_keys=True)
 		json.dump(config, config_file, indent=4, sort_keys=True)
 
 	# Call method in r
@@ -430,7 +473,7 @@ def runMethod():
 	visualizer = "result" + os.path.splitext(config["method"])[0]
 
 	# Redirect to output page for specific method
-	return redirect(url_for(visualizer, result_id=result_id))
+	return redirect(url_for(visualizer, result_id=request_id))
 
 # Route to the result of running a method, with particular id. 
 # Data is stored on the server in the /tmp folder which

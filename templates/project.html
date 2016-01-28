@@ -31,9 +31,6 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/agate.min.css"> -->
 
-<!-- tokenize for autocomplete selection of lists -->
-<script type="text/javascript" src="static/vendor/tokenize/jquery.tokenize.js"></script>
-<link rel="stylesheet" type="text/css" href="static/vendor/tokenize/jquery.tokenize.css" />
 
 <!-- Tag-it -->
 <!-- <script src="static/vendor/tag-it/js/tag-it.js" type="text/javascript" charset="utf-8"></script> -->
@@ -41,7 +38,7 @@
 
 <!-- <link rel="stylesheet" type="text/css" href="static/vendor/highlight/styles/default.css"> -->
 
-<form action="runMethod" method="post">
+<form action="setupMethod" method="post">
 
 <!-- Project header -->
 <div class="row toprow">
@@ -154,12 +151,6 @@ d3.json("/emmapt/api/getdtree/{{data_collection}}", function(error, data_file_tr
             var data_column = $("<div>").addClass("columns medium-6")
                 .appendTo($("#data-overview"));  // row of data entries
 
-            // if (i === data_file_tree.children.length - 1) {
-            //     // end column
-            //     data_column.addClass("end");  // foundation specifier for last column
-            //     console.log(data_column);
-            // }
-
             var data_panel = $("<div>").addClass("panel")
                 .appendTo(data_column);
 
@@ -180,19 +171,8 @@ d3.json("/emmapt/api/getdtree/{{data_collection}}", function(error, data_file_tr
             //     data: item.meta
             // });
 
-            // Render tree representation of data collection
+            // Render tree representation of data collection, including selection panel
             drawTree(svg, item, meta_div);
-
-
-            // data_panel.append(JSON.stringify(item.meta));
-
-            // data_panel.append("<h3>Metadata</h3>");
-
-
-            // var node = new PrettyJSON.view.Node({
-            //     el: data_panel,  // dom element to append to
-            //     data: item.meta
-            // });
 
         } else if (item.type === "file") {
             // Append file information to file table: name, size, action

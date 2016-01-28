@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<form action="runMethod/{{ request_id }}" method="post">
+	
+<div class="row toprow">
+	<div class="small-12 columns content">
+		<h1>Setup for mutual concordance (MUTCO) analysis</h1>
+		<p>session id: {{ request_id }}</p>
+		<div id="options" class="row"></div>
+
+		<button type="submit">run</button>
+	</div>
+</div>
+
+</form>
+
+<script type="text/javascript">
+	var h5input_files = {{ h5input_files | tojson }};  // Jinja2 filter converts to javascript object
+	for (var i in h5input_files) {
+		// console.log(h5input_files[i]);
+		// $("#options").append($("<h2>").text(h5input_files[i]));
+		$("#options").append(renderMatchSelector(h5input_files[i])
+			.attr("class", "small-6 columns panel"));
+	}
+</script>
+
+
+{% endblock %}
