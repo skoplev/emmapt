@@ -43,36 +43,6 @@ renderSingleMethodSelector = function(methods, h5path) {
 		type: "GET",
 		url: "/emmapt/api/h5meta/" + h5path,
 		success: function(meta_data) {
-			// var match_selection_box = view_div.find(".match-select");  // reference
-			// var subset_select_field = view_div.find(".subset-select-fields");  // reference
-
-			// Create HDF5 selection form
-
-			// // Column field names of HDF5 column meta data
-			// for (var i in meta_data.col_fields) {
-			// 	// select match condition
-			// 	entry = meta_data.col_fields[i];
-
-			// 	var option = ($("<option>")
-			// 		.attr("value", entry)
-			// 		.text(entry)
-			// 	).appendTo(match_selection_box);
-
-			// 	if ("default_match" in meta_data) {
-			// 		// Lookup if the selector entry is default
-			// 		if (meta_data.default_match.indexOf(entry) > -1) {
-			// 			// default
-			// 			option.attr("selected", "");
-			// 		} 
-			// 	}  // else no defaults
-
-			// 	// Add entry to subset selector
-			// 	subset_select_field.append($("<option>")
-			// 		.attr("value", entry)
-			// 		.text(entry));
-			// }
-
-			// subset_select_field.prop("selectedIndex", -1);
 
 			// Data matrix names of HDF5 file
 			for (var i in meta_data.matrices) {
@@ -84,56 +54,6 @@ renderSingleMethodSelector = function(methods, h5path) {
 					.text(entry)
 				);
 			}
-
-			// // Initialize a multi selection box with autocomplete from Tokenize
-			// // match_sel_box = $("#tokenize").tokenize();  // initialize tokenize
-			// match_selection_box.tokenize({
-			// 	displayDropdownOnFocus: true,
-			// 	newElements: false,
-			// 	placeholder: "specify match id"
-			// });
-
-			// // specify changes to subset select dropdown on changes
-			// subset_select_field.on("change", function() {
-			// 	// Clear previous
-			// 	var subset_select = view_div.find(".subset-select");
-			// 	subset_select.remove();
-
-			// 	if (this.value === "1") {
-			// 		// terminate without constructing multiselection table
-			// 		return 1;
-			// 	}
-
-			// 	// Look up value in the meta data
-			// 	// Find array number of field name
-			// 	var field_index = meta_data.col_fields.indexOf(this.value);
-
-			// 	// Create new multiple selection
-			// 	subset_select_field.after(
-			// 		$("<select>")
-			// 			.attr("class", "subset-select multi-select")
-			// 			.attr("multiple", "multiple")
-			// 			.attr("name", "subset-select/" + h5path)
-			// 		);
-			// 	subset_select = view_div.find(".subset-select");  // WARNING: only assigned locally?
-
-
-			// 	for (var i in meta_data.col_fields_values[field_index]) {
-			// 		entry = meta_data.col_fields_values[field_index][i];
-
-			// 		subset_select.append($("<option>")
-			// 			.attr("value", entry)
-			// 			.text(entry)
-			// 			);
-			// 	}
-
-			// 	subset_select.tokenize({
-			// 		displayDropdownOnFocus: true,
-			// 		newElements: false,
-			// 		placeholder: "specify samples to include"
-			// 	});
-			// });
-
 		}
 	});
 

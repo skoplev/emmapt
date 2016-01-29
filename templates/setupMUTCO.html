@@ -12,7 +12,19 @@
 		<!-- Container id for all selections -->
 		<div id="options" class="row"></div>
 
-		<button type="submit">run</button>
+		<div class="row">
+			<div class="small-6 columns">
+				<label>
+					Combined signal strength quantile filter. 0-100 where 0 is all and 100 none.
+					<input type="number" name="quantile_filter" value="0" />
+				</label>
+			</div>
+		</div>
+
+		<div class="row text-right">
+			<button type="submit">run</button>
+		</div>
+
 	</div>
 </div>
 
@@ -24,10 +36,11 @@
 	for (var i in h5input_files) {
 		$("#options").append(
 			$("<div>").attr("class", "columns medium-6")
-				// .append(renderSingleMethodSelector(["none", "PAGE", "X2K"], h5input_files[i])
-				// 	.attr("class", "panel"))
 				.append(renderMatchSelector(h5input_files[i])
 					.attr("class", "panel"))
+				// .append($("<input>")
+				// 	.attr("name", "quant_filter")
+				// 	.attr("type", "number"))
 		);
 	}
 </script>

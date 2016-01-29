@@ -6,7 +6,7 @@ library(bdmerge)
 library(getopt)
 library(rjson)
 
-quantile_filter = 0.5  # combined signal strenght quantile fitler
+# quantile_filter = 0.5  # combined signal strenght quantile fitler
 # quantile_filter = 0.75  # combined signal strenght quantile fitler
 
 opt = getopt(c(
@@ -33,6 +33,9 @@ if (is.null(opt$output)) {
 
 # Read config.json file
 config = fromJSON(file=opt$config)
+
+# Get quantile filter from config
+quantile_filter = as.numeric(config$options$quantile_filter) / 100.0
 
 # find two input with the most selected information
 most_information_input_index = order(sapply(config$input, length), decreasing=TRUE)[1:2]

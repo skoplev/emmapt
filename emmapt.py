@@ -334,6 +334,7 @@ def getH5Meta(collection):
 	# find closest meta.json file
 	meta_file_path = findMetaFile(collection)
 
+	# Load meta data, and look for default match fields
 	if meta_file_path > 0:
 		with open(meta_file_path) as json_file:
 			try:
@@ -343,24 +344,6 @@ def getH5Meta(collection):
 				print "Decoding JSON failed: ", collection_path
 			except KeyError:
 				pass
-
-
-	# print "meta.json was found: ", meta_file_path
-
-	# # get default selection of data entry, from root data collection meta.json file
-	# # collection_path = collection.split("/")
-	# # base_entry = collection_path[0] + "/" + collection_path[1]
-	# try:
-	# 	with open(os.path.join(app.root_path, collection_path[0], collection_path[1], "meta.json")) as json_file:
-	# 		try:
-	# 			collection_meta = json.load(json_file)
-	# 			meta["default_match"] = collection_meta["default_match"]
-	# 		except ValueError:
-	# 			print "Decoding JSON failed: ", collection_path
-	# 		except KeyError:
-	# 			pass
-	# except IOError:
-	# 	pass
 
 	return jsonify(meta)
 

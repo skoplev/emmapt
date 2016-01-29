@@ -30,36 +30,6 @@
 // Data section
 var data_set = {{data_set}};
 
-
-// Global data tree for current project
-// var dtree = {};
-
-// // Get data tree for entry
-// $.getJSON("/bdmerge/api/getdtree/{{data_collection}}", function(data) {
-// 	dtree = data;
-
-// 	for (var i = 0; i < dtree.children.length; i++) {
-// 		var item = dtree.children[i]
-// 		if (item.type === "dir") {
-// 			var data_column = $("<div>").addClass("columns large-6")
-// 			    .appendTo($("#data-selection"));  // row of data entries
-
-// 		    var data_panel = $("<div>").addClass("panel")
-// 		        .appendTo(data_column);
-
-// 			data_panel.append($("<h2>").text(item.name));
-
-// 			var svg = d3.select(data_panel.get(0))
-// 			    .append("svg")
-// 			        .attr("class", "d3tree");
-
-// 			// Render tree representation of data collection
-// 			drawTree(svg, trimTree(item, "file"));
-// 		}
-// 	}
-// });
-
-
 function printSelection() {
 	// console.log("pressed")
 	selection = d3.selectAll(".clicked");
