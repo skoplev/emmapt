@@ -2,17 +2,16 @@
 
 {% block content %}
 
-
-<form action="runMethod/{{ request_id }}" method="post">
+<form action="runTransform/{{ request_id }}" method="post">
 	
 <div class="row toprow">
 	<div class="small-12 columns content">
-		<h1>Setup for mutual concordance (MUTCO) analysis</h1>
+		<h1>Pretransform chosen data sets</h1>
 		<p>session id: {{ request_id }}</p>
 		<!-- Container id for all selections -->
 		<div id="options" class="row"></div>
 
-		<button type="submit">run</button>
+		<button type="submit">pretransform</button>
 	</div>
 </div>
 
@@ -24,10 +23,10 @@
 	for (var i in h5input_files) {
 		$("#options").append(
 			$("<div>").attr("class", "columns medium-6")
-				// .append(renderSingleMethodSelector(["none", "PAGE", "X2K"], h5input_files[i])
-				// 	.attr("class", "panel"))
-				.append(renderMatchSelector(h5input_files[i])
+				.append(renderSingleMethodSelector(["none", "PAGE.r", "X2K.r"], h5input_files[i])
 					.attr("class", "panel"))
+				// .append(renderMatchSelector(h5input_files[i])
+				// 	.attr("class", "panel"))
 		);
 	}
 </script>

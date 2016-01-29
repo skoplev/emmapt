@@ -31,6 +31,9 @@ import datetime
 from apscheduler.scheduler import Scheduler
 import logging
 
+SESSION_ID_LENGTH = 50  # code length of user session id's
+
+
 def zipdir(path, ziph):
 	# ziph is zipfile handle
 	for root, dirs, files in os.walk(path):
@@ -138,9 +141,59 @@ def makeTree(node_path):
 
 	return tree
 
+# Interpret POST requests.
+# Supports requests on the format "<command>/<path>" = [attributes]
+# Extracts entire request and returns an interpreted dictionary.
+def interpretPostRequest(request):
+	config = dict()
 
+	# config["method"] = ""
+	if "method" in request.form:
+		config["method"] = request.form["method"]
 
+	config["input"] = dict()  # path -> cmd -> [arguments]
 
+	config["options"] = dict()  # general options
+	# Loop over POST variable names
+	for key in request.form:
+		command_path = key.split("/", 1)  # first '/' is used to separate command from path
+		if len(command_path) == 2:
+			# format is   "<command>/<path>" = [attributes]
+			# POST input has both command and path
+			cmd = command_path[0]
+			path = command_path[1]  # unique identifier for submitted data matrices
+
+			# init HDF5 path if not previously seen
+			if not path in config["input"]:
+				config["input"][path] = dict()  # list of commands on the form (cmd, [arguments])
+	
+			config["input"][path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
+		elif key != "method":
+			config["options"][key] = request.form.getlist(key)
+
+	return config
+
+# Returns list of single input configs 
+# Assumes that the separation of input into single commands makes sense.
+# Function is used to assist the POST interface.
+def separateConfigDictByInput(multi_config):
+
+	single_configs = list()
+	for h5file in multi_config["input"]:
+		config = dict()  # new dict config specific to the h5path
+		config["input"] = dict()
+
+		config["input"][h5file] = multi_config["input"][h5file]
+		# copy method and options to base. Introduces redundancy in the config file
+		config["method"] = multi_config["input"][h5file]["method"]
+		try:
+			config["options"] = multi_config["input"][h5file]["options"]
+		except KeyError:
+			pass
+
+		single_configs.append(config)
+
+	return single_configs
 
 # Flask application
 # ---------------------------------
@@ -233,9 +286,9 @@ def getMetaData(collection):
 
 # Reads meta data of HDF5 file and returns json object containing field names
 # and lists of unique entries for each field.
-@app.route("/emmapt/api/h5meta/dtree/<path:collection>")
+@app.route("/emmapt/api/h5meta/<path:collection>")
 def getH5Meta(collection):
-	target_path = os.path.join(app.root_path, "dtree", collection)
+	target_path = os.path.join(app.root_path, collection)
 
 	# Open HDF5 file
 	f = h5py.File(target_path, "r")
@@ -271,14 +324,17 @@ def getH5Meta(collection):
 	# get default selection of data entry, from root data collection meta.json file
 	collection_path = collection.split("/")
 	base_entry = collection_path[0] + "/" + collection_path[1]
-	with open(os.path.join(app.root_path, "dtree", collection_path[0], collection_path[1], "meta.json")) as json_file:
-		try:
-			collection_meta = json.load(json_file)
-			meta["default_match"] = collection_meta["default_match"]
-		except ValueError:
-			print "Decoding JSON failed: ", collection_path
-		except KeyError:
-			pass
+	try:
+		with open(os.path.join(app.root_path, collection_path[0], collection_path[1], "meta.json")) as json_file:
+			try:
+				collection_meta = json.load(json_file)
+				meta["default_match"] = collection_meta["default_match"]
+			except ValueError:
+				print "Decoding JSON failed: ", collection_path
+			except KeyError:
+				pass
+	except IOError:
+		pass
 
 	return jsonify(meta)
 
@@ -373,93 +429,136 @@ def projectPage(collection):
 		data_collection=collection,  # data collection
 		title="Project: " + collection)
 
-# Configuration of method
-@app.route("/emmapt/setupMethod", methods=["POST"])
-def setupMethod():
-	results_code_size = 50  # code length of result id's
+# Generates new random session id's and creates local folder in /tmp/<id> folder.
+# Returns the path to the created folder.
+def makeLocalPath(local_id):
+	local_path = "tmp/" + local_id
+	os.mkdir(local_path)
+	return local_path
 
-	# make random folder name for output in tmp/ folder
-	request_id = randString(results_code_size)
-	results_path = "tmp/" + request_id
-	os.mkdir(results_path)
+# Configuration of pretransforms.
+# This is the first instance of the setup, which creates a session id
+@app.route("/emmapt/setupTransform", methods=["POST"])
+def setupTransform():
+	session_id = randString(SESSION_ID_LENGTH)
+	local_path = makeLocalPath(session_id)
+	config = interpretPostRequest(request)
 
-	# Interpret POST request
-	config = dict()
-	config["method"] = request.form["method"]
-	config["input"] = dict()  # path -> cmd -> [arguments]
-
-	config["options"] = dict()  # general options
-	# Loop over POST variable names
-	for key in request.form:
-		command_path = key.split("/", 1)  # first '/' is used to separate command from path
-		if len(command_path) == 2:
-			# POST input has both command and path
-			cmd = command_path[0]
-			path = command_path[1]  # unique identifier for submitted data matrices
-
-			# init HDF5 path if not previously seen
-			if not path in config["input"]:
-				config["input"][path] = dict()  # list of commands on the form (cmd, [arguments])
-	
-			config["input"][path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
-		elif key != "method":
-			config["options"][key] = request.form.getlist(key)
-
-	# Write config as file to 
-	with open(results_path + "/config.json", "w") as config_file:
+	# Write general config as file to local path, may be overwritten by the transform compilation.
+	with open(local_path + "/config.json", "w") as config_file:
 		json.dump(config, config_file, indent=4, sort_keys=True)
+
+	# setup_form = "setup" + os.path.splitext(config["method"])[0]
+
+	return render_template("setupTransform.html", request_id=session_id, h5input_files=config["input"].keys(), method=config["method"])
+
+@app.route("/emmapt/runTransform/<request_id>", methods=["POST"])
+def runTransform(request_id):
+	session_path = os.path.join("tmp", request_id)
+
+	# Interpret the transformation POST request
+	transform_config = interpretPostRequest(request)
+	sep_transform_configs = separateConfigDictByInput(transform_config)
+
+	# pprint(transform_config)
+	# pprint(sep_transform_configs)
+
+	# Open config from file
+	# Init method configuation, which is based on the output of the transforms
+	with open(session_path + "/config.json") as json_file:
+		method_config = json.load(json_file)
+
+	# Reset config specifications
+	method_config["input"] = dict()
+	method_config["options"] = dict()
+
+
+	# Run each command and store the config.json in the apropriate tree structure.
+	for config in sep_transform_configs:
+		# Get the 
+		h5path = config["input"].keys()[0]
+		if ("method" not in config) or (config["method"][0] == "none"):
+			# no transform, store original h5path provided from POST request
+			method_config["input"][h5path] = dict()  # dictionary specification by convention
+		else:
+			# Create new local folder for transformation output
+			local_out_folder = os.path.join(session_path, os.path.dirname(h5path), config["method"][0])
+			os.makedirs(local_out_folder)
+
+			# write config file to local data path. Used for input and for provenance.
+			with open(local_out_folder + "/config.json", "w") as config_file:
+				json.dump(config, config_file, indent=4, sort_keys=True)
+
+			# Call transformation method 
+			try:
+				method_output = subprocess.check_output(
+					["methods/" + config["method"][0], "-c", local_out_folder + "/config.json", "-o", local_out_folder],
+					stderr=subprocess.STDOUT
+					# stdout=subprocess.STDOUT,
+					# shell=True
+					)
+
+			except subprocess.CalledProcessError as e:
+				# Transform to RunrimeError which es handled by Flask
+				raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
+
+			# Store the local HDF5 file path for next analysis step
+			method_config["input"][local_out_folder + "/data.h5"] = dict()
+
+	# write the config for the integrative method in base folder
+	with open(session_path + "/config.json", "w") as config_file:
+		json.dump(method_config, config_file, indent=4, sort_keys=True)
+
+	# Redirect to integrative method setup
+	return redirect(url_for("setupMethod", session_id=request_id))
+
+# Configuration of method
+@app.route("/emmapt/setupMethod", methods=["POST", "GET"])
+def setupMethod():
+	if "session_id" in request.args:
+		# retrieve session id
+		session_id = request.args["session_id"]
+		session_path = "tmp/" + session_id
+
+		# Load config file
+		with open(session_path + "/config.json") as json_file:
+			config = json.load(json_file)
+	else:
+		# Initiate new session, with config from POST request
+		session_id = randString(SESSION_ID_LENGTH)
+		local_path = makeLocalPath(session_id)
+		config = interpretPostRequest(request)
+
+		# Write config as file to 
+		with open(local_path + "/config.json", "w") as config_file:
+			json.dump(config, config_file, indent=4, sort_keys=True)
 
 	setup_form = "setup" + os.path.splitext(config["method"])[0]
 
-	return render_template(setup_form + ".html", request_id=request_id, h5input_files=config["input"].keys())
+	return render_template(setup_form + ".html", request_id=session_id, h5input_files=config["input"].keys())
 
 
 @app.route('/emmapt/runMethod/<request_id>', methods=["POST"])
 def runMethod(request_id):
 	# results_code_size = 50  # code length of result id's
 
-	results_path = "tmp/" + request_id
+	session_path = "tmp/" + request_id
 
 	# Open config from file
-	with open(results_path + "/config.json") as json_file:
+	with open(session_path + "/config.json") as json_file:
 		config = json.load(json_file)
 
-	# Interpret POST request modifying the config file accordingly
-	# config["method"] = request.form["method"]
-	if not "input" in config:
-		config["input"] = dict()  # path -> cmd -> [arguments]
-
-	if not "options" in config:
-		config["options"] = dict()  # general options
-	# Loop over POST variable names
-	for key in request.form:
-		command_path = key.split("/", 1)  # first '/' is used to separate command from path
-		if len(command_path) == 2:
-			# POST input has both command and path
-			cmd = command_path[0]
-			path = command_path[1]  # unique identifier for submitted data matrices
-
-			# init HDF5 path if not previously seen
-			if not path in config["input"]:
-				config["input"][path] = dict()  # list of commands on the form (cmd, [arguments])
- 
-			config["input"][path][cmd] = request.form.getlist(key)  # includes single arguments as 1-lists
-		elif key != "method":
-			config["options"][key] = request.form.getlist(key)
-
-	# # make random folder name for output in tmp/ folder
-	# result_id = randString(results_code_size)
-	# results_path = "tmp/" + request_id
-	# os.mkdir(results_path)
+	# Interpret POST request modifying the config file accordingly, new config items have precedence
+	config = dict(config.items() + interpretPostRequest(request).items())
 
 	# Write config as file to 
-	with open(results_path + "/config.json", "w") as config_file:
+	with open(session_path + "/config.json", "w") as config_file:
 		json.dump(config, config_file, indent=4, sort_keys=True)
 
 	# Call method in r
 	try:
 		method_output = subprocess.check_output(
-			["methods/" + config["method"], "-c", results_path + "/config.json", "-o", results_path],
+			["methods/" + config["method"], "-c", session_path + "/config.json", "-o", session_path],
 			stderr=subprocess.STDOUT
 			# stdout=subprocess.STDOUT,
 			# shell=True
